@@ -18,22 +18,37 @@ ALL_DIRS = . \
 
 
 PHONY = all
-all: build_dir $(_TARGETS)
+all: build_dir dsdl $(_TARGETS)
 
 %.tgt: %
 	$(MAKE) -C ./$^
-	cp ./$^/$(BUILD_DIR)/out/$^ ./$(BUILD_DIR)/out/$^
+	cp ./$^/$(BUILD_DIR)/out/$^ $(BUILD_DIR)/out/$^
 
 PHONY += build_dir
 build_dir:
 	mkdir -p $(BUILD_DIR)
-	# mkdir -p $(BUILD_DIR)/out/$(TGT_SLAVE)
 	mkdir -p $(BUILD_DIR)/out/$(TGT_MASTER)
+# mkdir -p $(BUILD_DIR)/out/$(TGT_SLAVE)
+
+
+# надо чтобы пользователь был в venv в котором установлен dsdl 
+DSDL_PY = ./modules/dronecan_dsdlc/dronecan_dsdlc.py
+export DSDL_DIR = $(abspath ./dsdl)
+
+PHONY += dsdl
+dsdl: modules/DSDL
+	$(DSDL_PY) -O $(DSDL_DIR) \
+		./modules/DSDL/uavcan/ \
+		./modules/DSDL/dronecan/
+
+modules/DSDL:
+	git submodule update --init --recursive
 
 
 PHONY += clean
 clean: $(TARGETS_CLEAN) remove_squiggles
 	rm -rf $(BUILD_DIR)
+	rm -rf $(DSDL_DIR)
 
 PHONY += $(TARGETS_CLEAN)
 $(TARGETS_CLEAN):
