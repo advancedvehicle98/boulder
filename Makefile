@@ -14,7 +14,10 @@ _TARGETS = $(foreach T,$(TARGETS),$(T).tgt)
 TARGETS_CLEAN = $(foreach T,$(TARGETS),$(T).clean)
 
 ALL_DIRS = . \
-	./$(TGT_SLAVE) ./$(TGT_MASTER)
+	./$(TGT_SLAVE) ./$(TGT_MASTER) \
+	./config ./config/master ./config/slave \
+	./config/master/platforms/* \
+	./config/slave/platforms/*
 
 
 INCLUDE_DIRS = ./dsdl/include ./include

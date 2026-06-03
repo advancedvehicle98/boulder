@@ -1,7 +1,0 @@
-export CONFIG_MASTER_PLATFORM ?= native
-
-
-include config/master/platforms/$(CONFIG_MASTER_PLATFORM)/config.mk
-
-include config/master.mk
-include config/slave.mk
