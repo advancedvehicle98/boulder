@@ -7,7 +7,8 @@ COMPONENTS = can
 
 CAN_TARGETS = data.o deinit.o init.o
 
-OBJS = deinit.o init.o main.o parse_args.o run.o \
+OBJS = \
+	init.o main.o parse_args.o \ 
 	$(foreach T,$(CAN_TARGETS),can/$(T))
 
 TARGETS = $(foreach O,$(OBJS),$(BUILD_DIR)/$(O))
@@ -34,9 +35,7 @@ CFLAGS += -I $(INC_DIR)
 # линковщик ---------------------------------------------
 LD = $(CC)
 
-LIBS = c
-
-LDFLAGS = $(foreach L,$(LIBS),-l$(L))
+LDFLAGS = 
 
 
 PHONY = all

@@ -17,6 +17,10 @@ ALL_DIRS = . \
 	./$(TGT_SLAVE) ./$(TGT_MASTER)
 
 
+INCLUDE_DIRS = ./dsdl/include ./include
+export CFLAGS += $(foreach D,$(INCLUDE_DIRS),-I$(abspath $(D)))
+
+
 PHONY = all
 all: build_dir dsdl $(_TARGETS)
 
