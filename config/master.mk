@@ -1,5 +1,5 @@
 # платформа (под чё собирать, см. что есть в директории master/platform)
-export CONFIG_MASTER_PLATFORM ?= native
+export CONFIG_MASTER_PLATFORM ?= repka-pi3
 
 
 # rsync

@@ -13,15 +13,17 @@ _TARGETS = $(foreach T,$(TARGETS),$(T).tgt)
 
 TARGETS_CLEAN = $(foreach T,$(TARGETS),$(T).clean)
 
+INCLUDE_DIRS = ./dsdl/include ./include
+export CFLAGS += $(foreach D,$(INCLUDE_DIRS),-I$(abspath $(D)))
+
 ALL_DIRS = . \
 	./$(TGT_SLAVE) ./$(TGT_MASTER) \
 	./config ./config/master ./config/slave \
 	./config/master/platforms/* \
-	./config/slave/platforms/*
-
-
-INCLUDE_DIRS = ./dsdl/include ./include
-export CFLAGS += $(foreach D,$(INCLUDE_DIRS),-I$(abspath $(D)))
+	./config/slave/platforms/* \
+	./$(INCLUDE_DIRS) \
+	./$(INCLUDE_DIRS)/common \
+	./$(INCLUDE_DIRS)/common/internal
 
 
 PHONY = all
@@ -38,11 +40,13 @@ build_dir:
 # mkdir -p $(BUILD_DIR)/out/$(TGT_SLAVE)
 
 
+# генерация файлов для dronecan/uavcan ------------------------------------
+
 # надо чтобы пользователь был в venv в котором установлен dsdl 
 DSDL_PY = ./modules/dronecan_dsdlc/dronecan_dsdlc.py
 export DSDL_DIR = $(abspath ./dsdl)
 
-PHONY += dsdl
+# ЭТО НЕЛЬЗЯ ДОБАВЛЯТЬ В PHONY
 dsdl: modules/DSDL
 	$(DSDL_PY) -O $(DSDL_DIR) \
 		./modules/DSDL/uavcan/ \
@@ -51,6 +55,8 @@ dsdl: modules/DSDL
 modules/DSDL:
 	git submodule update --init --recursive
 
+
+# то, о чем вежливо просил маслаев епифанцева в художественном к/ф "зелёный слоник" -----------------
 
 PHONY += clean
 clean: $(TARGETS_CLEAN) remove_squiggles
@@ -66,6 +72,8 @@ remove_squiggles:
 	rm -rf $(foreach D,$(ALL_DIRS),$(D)/*~)
 
 
+# удалённая установка ---------------------------------------------------------
+
 RSYNC_SRC = $(BUILD_DIR)/out/$(TGT_MASTER)
 RSYNC_DEST = $(CONFIG_MASTER_RSYNC_DEST):$(CONFIG_MASTER_RSYNC_INSTALL_DIR)
 
@@ -73,9 +81,11 @@ PHONY += install
 install: 
 	rsync -a $(RSYNC_SRC) $(RSYNC_DEST)
 
+
+# прошивка (platform_flash определяется в конфигах под определённую платформу) --------------------
+
 PHONY += flash
-flash:
-	$(CONFIG_SLAVE_FLASH_COMMAND)
+flash: platform_flash
 
 
 .PHONY: $(PHONY)

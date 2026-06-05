@@ -1,5 +1,7 @@
 #include <master/state.h>
 
+#include <common/can.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -10,13 +12,18 @@ size_t _interpret_cmd_arg( __STATE boulder_state_args_t *args,
 						   __IN const char *opt,
 						   __IN const char *tail[] );
 
+size_t _try_as_can_bitrate( __STATE boulder_state_args_t *args,
+							__IN const char *opt,
+							__IN const char *tail[] );
+
 size_t _try_as_can_iface_name( __STATE boulder_state_args_t *args,
 							   __IN const char *opt,
 							   __IN const char *tail[] );
 
-typedef size_t ( *try_as_func_t )( boulder_state_args_t *, const char *, const char * );
+typedef size_t ( *try_as_func_t )( boulder_state_args_t *, const char *, const char *[] );
 	
 try_as_func_t _try_as[] = {
+	_try_as_can_bitrate,
 	_try_as_can_iface_name
 };
 
@@ -29,7 +36,8 @@ master_parse_args( __STATE        boulder_state_args_t *args_out,
 				   __IN     const char                 *argv[] )
 {
 	int di = 0;
-	
+
+	// проходимся по всем возможным аргументам
 	for ( int i = 0; i < argc; i += di ) {
 		di = _interpret_cmd_arg( args_out, argv[ i ], &( argv[ i+1 ] ) );
 		if ( ! di ) return EXIT_FAILURE;
@@ -39,13 +47,14 @@ master_parse_args( __STATE        boulder_state_args_t *args_out,
 }
 
 
+// возвращает кол-во интерпретированных аргументов командной строки
 size_t
 _interpret_cmd_arg( __STATE       boulder_state_args_t *args_out,
 					__IN    const char                 *opt,
 					__IN    const char                 *tail[] )
 {
 	for ( size_t a = 0; a < TRY_AS_COUNT; ++a ) {
-		size_t offset = _try_as[ a ]( opt, tail );
+		size_t offset = _try_as[ a ]( args_out, opt, tail );
 		
 		if ( offset ) return offset;
 	}
@@ -55,21 +64,38 @@ _interpret_cmd_arg( __STATE       boulder_state_args_t *args_out,
 
 
 size_t
+_try_as_can_bitrate( __STATE       boulder_state_args_t *args,
+					 __IN    const char                 *opt,
+					 __IN    const char                 *tail[] )
+{
+	if ( ! _str_equal( opt, "--can-bitrate" ) ) return 0;
+
+	if ( ! tail[ 0 ] ) return 0;
+
+	uint32_t bitrate = atoi( tail[ 0 ] );
+
+	if (    bitrate < CAN_BITRATE_MIN
+		 || bitrate > CAN_BITRATE_MAX )
+		return 0;
+	
+	can_state_args_t *can = &( args->can );	
+	can->bitrate = bitrate;
+	
+	return 2;
+}
+
+
+size_t
 _try_as_can_iface_name( __STATE       boulder_state_args_t *args_out,
 						__IN    const char                 *opt,
 						__IN    const char                 *tail[] )
-{
+{	
 	if ( ! _str_equal( opt, "--can-iface-name" ) ) return 0;
 
-	if ( ! tail[ 0 ] || strlen( tail[ 0 ] ) > MASTER_CAN_IF_NAME_LEN ) return 0;
-	
-	can_state_args_t *can = &( args_out->can );
-	can->if_name = tail[ 0 ];
+	if ( ! tail[ 0 ] || strlen( tail[ 0 ] ) > MASTER_CAN_IF_NAME_LEN-1 ) return 0;
 
-	if ( strncmp( tail[ 0 ], "can", 3 ) == 0 )
-		can->if_index = atoi( &( tail[ 0 ][ 3 ] ) ); // если че то не то, то один хуй индекс нулевой
-	else ( strncmp( tail[ 0 ], "vcan", 4 ) == 0 )
-		can->if_index = atoi( &( tail[ 0 ][ 4 ] ) );
+	can_state_args_t *can = &( args_out->can );	
+	can->if_name = tail[ 0 ];
 
 	return 2;
 }
