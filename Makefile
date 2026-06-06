@@ -6,15 +6,17 @@ TGT_SLAVE = slave
 TGT_MASTER = master
 
 TARGETS = \
-	$(TGT_MASTER)#  \
-	# $(TGT_SLAVE)
+	$(TGT_MASTER) \
+	$(TGT_SLAVE)
 
 _TARGETS = $(foreach T,$(TARGETS),$(T).tgt)
 
 TARGETS_CLEAN = $(foreach T,$(TARGETS),$(T).clean)
 
 INCLUDE_DIRS = ./dsdl/include ./include
-export CFLAGS += $(foreach D,$(INCLUDE_DIRS),-I$(abspath $(D)))
+export CFLAGS += \
+	$(foreach D,$(INCLUDE_DIRS),-I$(abspath $(D))) \
+	-Wall
 
 ALL_DIRS = . \
 	./$(TGT_SLAVE) ./$(TGT_MASTER) \
@@ -85,7 +87,25 @@ install:
 # прошивка (platform_flash определяется в конфигах под определённую платформу) --------------------
 
 PHONY += flash
-flash: platform_flash
+flash: slave_flash
+
+
+# очень полезная инфа -----------------------------------
+
+PHONY += print_master_platforms
+print_master_platforms:
+	@echo "Доступные платформы: "
+	@echo $(foreach P,$(MASTER_PLATFORM_LIST),"\t$(P)\n")
+
+PHONY += print_slave_platforms
+print_slave_platforms:
+	@echo "Доступные платформы: "
+	@echo $(foreach P,$(SLAVE_PLATFORM_LIST),"\t$(P)\n")
+
+PHONY += print_slave_chips
+print_slave_chips:
+	@echo "Доступные микроконтроллеры: "
+	@echo $(foreach P,$(SLAVE_CHIP_LIST),"\t$(P)\n")
 
 
 .PHONY: $(PHONY)

@@ -22,7 +22,7 @@ master_init( __STATE       boulder_state_t *s,
 		can_init_error_t can_init_status = master_can_init( can_state, &( args->can ) );
 
 		if ( _unlikely( ! can_state->ready ) ) {
-			printf( "%s: Не удалось инициализировать CAN-интерфейс", log_prefix );
+			printf( "%s: Не удалось инициализировать CAN-интерфейс\n", log_prefix );
 			master_can_init_print_error( can_init_status );
 			return EXIT_FAILURE;
 		}

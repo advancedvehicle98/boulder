@@ -62,19 +62,19 @@ master_can_set_bitrate( __IN const uint32_t if_index,
 		}
 		
 		{
-			struct rtattr *linkinfo = NLMSG_TAIL( &slinfo.header );
+			struct rtattr *linkinfo = _NLMSG_TAIL( &slinfo.header );
 
 			_addattr( &slinfo.header, sizeof( set_linkinfo_t ), IFLA_LINKINFO,  NULL,  0 );
 			_addattr( &slinfo.header, sizeof( set_linkinfo_t ), IFLA_INFO_KIND, "can", 3 );
 
-			struct rtattr *data = NLMSG_TAIL( &slinfo.header );
+			struct rtattr *data = _NLMSG_TAIL( &slinfo.header );
 
 			_addattr( &slinfo.header, sizeof( set_linkinfo_t ), IFLA_INFO_DATA, NULL, 0 );
 		
 			_addattr( &slinfo.header, 1024, IFLA_CAN_BITTIMING, &bittiming, sizeof( struct can_bittiming ) );
 		
-			data->rta_len     = (void *) NLMSG_TAIL( &slinfo.header ) - (void *) data;
-			linkinfo->rta_len = (void *) NLMSG_TAIL( &slinfo.header ) - (void *) linkinfo;
+			data->rta_len     = (void *) _NLMSG_TAIL( &slinfo.header ) - (void *) data;
+			linkinfo->rta_len = (void *) _NLMSG_TAIL( &slinfo.header ) - (void *) linkinfo;
 		}
 		
 		{
@@ -123,7 +123,7 @@ _addattr( __STATE       struct nlmsghdr *hdr,
 		  __IN    const size_t           data_len )
 {
 	int32_t len = RTA_LENGTH( data_len );
-	struct rtattr *rta = NLMSG_TAIL( hdr );
+	struct rtattr *rta = _NLMSG_TAIL( hdr );
 
 	rta->rta_type = type;
 	rta->rta_len  = len;

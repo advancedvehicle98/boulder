@@ -44,7 +44,7 @@ LD = $(CC)
 
 LIBS = c m
 
-LDFLAGS = $(foreach L,$(LIBS),-l$(L))
+LDFLAGS += $(foreach L,$(LIBS),-l$(L))
 
 
 PHONY = all
@@ -60,7 +60,7 @@ $(BUILD_DIR)/%.o: src/%.c
 
 PHONY += link
 link:
-	$(LD) $(TARGETS) -o $(BUILD_DIR)/out/master
+	$(LD) $(LDFLAGS) $(TARGETS) -o $(BUILD_DIR)/out/master
 
 
 PHONY += build_dir

@@ -1,6 +1,7 @@
 #ifndef __BOULDER_MASTER_STATE_H
 #define __BOULDER_MASTER_STATE_H
 
+
 #include <master/can.h>
 
 #include <common/defines.h>
@@ -10,8 +11,8 @@
 
 
 typedef enum {
-	MASTER_RUN_FINISH,
-	MASTER_RUN_CONTINUE
+	MASTER_RUN_CONTINUE,
+	MASTER_RUN_FINISH
 } boulder_run_status_t;
 
 

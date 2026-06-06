@@ -14,7 +14,7 @@
 #define MASTER_NET_TRY_SET_LINKINFO_BUFFER_LEN 16*1024
 
 // см. https://github.com/lalten/libsocketcan/blob/b464485031b6f2a4e53d3ef1b3d405f9ba159c07/src/libsocketcan.c
-#define NLMSG_TAIL( MSG ) \
+#define _NLMSG_TAIL( MSG ) \
 	( (struct rtattr *) \
 	    ( (void *) MSG \
 		  + NLMSG_ALIGN( ( MSG )->nlmsg_len ) ) )
