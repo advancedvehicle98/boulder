@@ -5,6 +5,9 @@ export BUILD_DIR = build
 TGT_SLAVE = slave
 TGT_MASTER = master
 
+export MASTER_EXE = $(BUILD_DIR)/out/$(TGT_MASTER)
+export SLAVE_EXE = $(BUILD_DIR)/out/$(TGT_SLAVE)
+
 TARGETS = \
 	$(TGT_MASTER) \
 	$(TGT_SLAVE)
@@ -18,16 +21,6 @@ export CFLAGS += \
 	$(foreach D,$(INCLUDE_DIRS),-I$(abspath $(D))) \
 	-Wall
 
-ALL_DIRS = . \
-	./$(TGT_SLAVE) ./$(TGT_MASTER) \
-	./config ./config/master ./config/slave \
-	./config/master/platforms/* \
-	./config/slave/platforms/* \
-	./$(INCLUDE_DIRS) \
-	./$(INCLUDE_DIRS)/common \
-	./$(INCLUDE_DIRS)/common/internal
-
-
 PHONY = all
 all: build_dir dsdl $(_TARGETS)
 
@@ -39,7 +32,7 @@ PHONY += build_dir
 build_dir:
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/out/$(TGT_MASTER)
-# mkdir -p $(BUILD_DIR)/out/$(TGT_SLAVE)
+	mkdir -p $(BUILD_DIR)/out/$(TGT_SLAVE)
 
 
 # генерация файлов для dronecan/uavcan ------------------------------------
@@ -71,7 +64,7 @@ $(TARGETS_CLEAN):
 
 PHONY += remove_squiggles
 remove_squiggles:
-	rm -rf $(foreach D,$(ALL_DIRS),$(D)/*~)
+	find ./ | grep '~' | xargs rm -f
 
 
 # удалённая установка ---------------------------------------------------------
@@ -84,10 +77,12 @@ install:
 	rsync -a $(RSYNC_SRC) $(RSYNC_DEST)
 
 
-# прошивка (platform_flash определяется в конфигах под определённую платформу) --------------------
+# прошивка (chip_specific_flash определяется в конфигах под определённый камень) --------------------
 
-PHONY += flash
-flash: slave_flash
+include config/slave/chips/$(CONFIG_SLAVE_CHIP)/flash.mk
+
+PHONY += flash chip_specific_flash
+flash: chip_specific_flash
 
 
 # очень полезная инфа -----------------------------------

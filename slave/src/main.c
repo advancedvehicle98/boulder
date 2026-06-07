@@ -15,7 +15,7 @@ main( void )
 	// аппаратная инициализация --------------------------------------
 	
 	{
-		platform_init_status_t init_status = slave_platform_init();
+		platform_init_error_t init_status = slave_platform_init();
 
 		if ( init_status != PLATFORM_INIT_SUCCESS )
 			slave_platform_init_log_and_halt( init_status );
@@ -24,7 +24,7 @@ main( void )
 	// инициализация автопилота --------------------------------------
 	
 	{
-		boulder_init_status_t init_status = slave_init( &state );
+		boulder_init_error_t init_status = slave_init( &state );
 
 		if ( init_status != SLAVE_INIT_SUCCESS )
 			slave_init_log_and_halt( init_status );

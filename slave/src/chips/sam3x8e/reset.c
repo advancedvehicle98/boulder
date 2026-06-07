@@ -6,24 +6,37 @@
 #include <common/defines.h>
 
 
-__NORETURN void
+void
 slave_chip_reset( void )
 {
 	uint32_t *src, *dest;
 
-	src = &_etext;
-	dest = &_srelocate;
+	// перемещаем перемещаемый код, если есть
+	
+	{
+		src = &_etext;
+		dest = &_srelocate;
 
-	if ( src != dest ) for ( ; dest < &_erelocate; ) *dest++ = *src++;
+		if ( src != dest ) for ( ; dest < &_erelocate; ) *dest++ = *src++;
+	}
 
-	for ( dest = &_szero; dest < &_ezero; ) *dest++ = 0;
+	// зануляем BSS-секцию
+	
+	{	
+		for ( dest = &_szero; dest < &_ezero; ) *dest++ = 0;
+	}
 
-	src = (uint32_t *) &_sfixed;
-	cm3_scb->vtor = (uint32_t) src & SCB_VTOR_TBLOFF_MASK;
+	// копируем адрес векторов в SCB_VTOR
+	
+	{
+		src = (uint32_t *) &_sfixed;
+		cm3_scb->vtor = (uint32_t) src & CM3_SCB_VTOR_TBLOFF_MASK;
+	
+		if (    src >= SAM3X8E_IRAM0_BASE
+			 && src <  SAM3X8E_NFC_RAM_BASE )
+			cm3_scb->vtor |= 1UL << CM3_SCB_VTOR_TBLBASE_POS;
+	}
 
-	if (    (uint32_t) src >= SAM3X8E_IRAM0_ADDR
-		 && (uint32_t) src <  SAM3X8E_NFC_RAM_ADDR )
-		cm3_scb->vtor |= 1UL << SCB_VTOR_TBLBASE_POS;
-
+	// то ради чего мы все здесь собрались
 	main();
 }

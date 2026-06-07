@@ -40,15 +40,15 @@ typedef struct _scb_t {
 	__IO uint32_t cpacr;
 } scb_t;
 
-#define CM3_SCB_BASE ( CM3_SCS_BASE + 0x0D00UL )
+#define CM3_CM3_SCB_BASE ( CM3_SCS_BASE + 0x0D00UL )
 
-#define cm3_scb ( (scb_t *) CM3_SCB_BASE )
+#define cm3_scb ( (scb_t *) CM3_CM3_SCB_BASE )
 
-#define SCB_VTOR_TBLBASE_POS  29
-#define SCB_VTOR_TBLBASE_MASK ( 1UL << SCB_VTOR_TBLBASE_POS )
+#define CM3_SCB_VTOR_TBLBASE_POS  29
+#define CM3_SCB_VTOR_TBLBASE_MASK ( 1UL << CM3_SCB_VTOR_TBLBASE_POS )
 
-#define SCB_VTOR_TBLOFF_POS  7
-#define SCB_VTOR_TBLOFF_MASK ( 0x3FFFFFUL << SCB_VTOR_TBLOFF_POS )
+#define CM3_SCB_VTOR_TBLOFF_POS  7
+#define CM3_SCB_VTOR_TBLOFF_MASK ( 0x3FFFFFUL << CM3_SCB_VTOR_TBLOFF_POS )
 
 
 // обработчики исключений ----------------------------------------------------------------------------------

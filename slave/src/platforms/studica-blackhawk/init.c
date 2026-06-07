@@ -5,16 +5,16 @@
 #include <stdbool.h>
 
 
-platform_init_status_t
+platform_init_error_t
 slave_platform_init( void )
 {
 	// будим камень -----------------------------------------------
 	
 	{
-		chip_init_status_t init_status = slave_chip_init();
+		chip_init_error_t init_error = slave_chip_init();
 
-		if ( init_status != CHIP_INIT_SUCCESS ) {
-			slave_chip_init_log( init_status );
+		if ( init_error != CHIP_INIT_SUCCESS ) {
+			slave_chip_init_log( init_error );
 			return PLATFORM_FAILED_CHIP_INIT;
 		}
 	}
@@ -24,7 +24,7 @@ slave_platform_init( void )
 
 
 void
-slave_platform_init_log_and_halt( __IN const platform_init_status_t e )
+slave_platform_init_log_and_halt( __IN const platform_init_error_t e )
 {
 	while ( true ) { }
 }

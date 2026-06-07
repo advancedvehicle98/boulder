@@ -4,12 +4,21 @@
 
 #include <slave/chip.h>
 
+#include <common/defines.h>
+
 #include <stdint.h>
 
+#include "sam3x8e/can.h"
+#include "sam3x8e/ckgr.h"
+#include "sam3x8e/eefc.h"
+#include "sam3x8e/pmc.h"
 
-#define SAM3X8E_IRAM0_ADDR 0x20000000U
-#define SAM3X8E_NFC_RAM_ADDR 0x20100000U
 
+#define SAM3X8E_IRAM0_BASE   ( (uint32_t *) 0x20000000UL )
+#define SAM3X8E_NFC_RAM_BASE ( (uint32_t *) 0x20100000UL )
+
+
+// это тянется из link.ld ----------------------------------------------
 
 extern uint32_t _sfixed;
 extern uint32_t _efixed;
@@ -21,6 +30,8 @@ extern uint32_t _ezero;
 extern uint32_t _sstack;
 extern uint32_t _estack;
 
+
+// пускай будет ----------------------------------------------------------
                              
 extern const handler_func_t sam3x8e_supc_handler;
 extern const handler_func_t sam3x8e_rstc_handler;

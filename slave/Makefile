@@ -3,26 +3,33 @@ BUILD_DIR ?= ./build
 SRC_DIR = ./src
 INC_DIR = ./include
 
-COMPONENTS = chips drivers platforms
+# -------------------------------------------------------------------------
 
-PLATFORM_OBJS = init.o
+PLATFORM_TARGETS = init.o
 
-CHIP_OBJS = general_purpose_handler.o init.o reset.o startup.o
+# -------------------------------------------------------------------------
+
+CHIP_CAN_TARGETS = init.o
+
+CHIP_COMPONENTS = can
+
+CHIP_TARGETS = general_purpose_handler.o init.o reset.o startup.o \
+	$(foreach C,$(CHIP_CAN_TARGETS),can/$(C))
+
+# -------------------------------------------------------------------------
+
+CAN_TARGETS = init.o
+
+COMPONENTS = can chips drivers platforms
 
 OBJS = handle_exit.o init.o main.o run.o \
-	$(foreach COBJ,$(CHIP_OBJS),chips/$(CONFIG_SLAVE_CHIP)/$(COBJ)) \
-	$(foreach POBJ,$(PLATFORM_OBJS),platforms/$(CONFIG_SLAVE_PLATFORM)/$(POBJ))
+	$(foreach COBJ,$(CHIP_TARGETS),chips/$(CONFIG_SLAVE_CHIP)/$(COBJ)) \
+	$(foreach POBJ,$(PLATFORM_TARGETS),platforms/$(CONFIG_SLAVE_PLATFORM)/$(POBJ)) \
+	$(foreach C,$(CAN_TARGETS),can/$(C))
+
+# -------------------------------------------------------------------------
 
 TARGETS = $(foreach O,$(OBJS),$(BUILD_DIR)/$(O))
-
-ALL_DIRS = \
-	$(SRC_DIR) \
-	$(INC_DIR)/slave \
-	$(INC_DIR)/slave/chips \
-	$(INC_DIR)/slave/chips/arm \
-	$(foreach C,$(COMPONENTS),$(SRC_DIR)/$(C)) \
-	$(foreach P,$(SLAVE_PLATFORM_LIST),$(SRC_DIR)/platforms/$(P)) \
-	$(foreach C,$(SLAVE_CHIP_LIST),$(SRC_DIR)/chips/$(C))
 
 # -------------------------------------------------------------------------
 
@@ -37,7 +44,10 @@ CFLAGS += \
 	-nostdlib -O2 -std=gnu99 \
 	-ffunction-sections \
 	-fdata-sections \
-	-ffreestanding
+	-ffreestanding \
+	-DCONFIG_SLAVE_CHIP_$(CONFIG_SLAVE_CHIP) \
+	-DCONFIG_SLAVE_PLATFORM_$(CONFIG_SLAVE_PLATFORM_NAME) \
+	$(foreach D,$(CONFIG_SLAVE_CHIP_SPECIFIC_DEFINES),-D$(D))
 
 CFLAGS += -I $(INC_DIR)
 
@@ -55,7 +65,7 @@ LDFLAGS += $(CONFIG_SLAVE_LDFLAGS) \
 # -------------------------------------------------------------------------
 
 PHONY = all
-all: $(BUILD_DIR) compile link chip_specific
+all: $(BUILD_DIR) compile link chip_specific_post_build
 
 # chip_specific определяется в mk-конфигах под каждый камень
 # в скриптах используются пути, относительные к ./slave (мы сейчас
@@ -85,7 +95,9 @@ link:
 BUILD_DIR_CONTENTS = \
 	$(COMPONENTS) \
 	chips/$(CONFIG_SLAVE_CHIP) \
-	platforms/$(CONFIG_SLAVE_PLATFORM)
+	platforms/$(CONFIG_SLAVE_PLATFORM) \
+	$(foreach C,$(PLATFORM_COMPONENTS),platforms/$(CONFIG_SLAVE_PLATFORM)/$(C)) \
+	$(foreach C,$(CHIP_COMPONENTS),chips/$(CONFIG_SLAVE_CHIP)/$(C))
 
 $(BUILD_DIR): $(foreach D,$(BUILD_DIR_CONTENTS),$(BUILD_DIR)/$(D))
 	mkdir -p $@/out
@@ -96,18 +108,14 @@ $(BUILD_DIR)/%:
 # -------------------------------------------------------------------------
 
 PHONY += clean
-clean: remove_squiggles
+clean:
 	rm -rf $(BUILD_DIR)
-
-PHONY += remove_squiggles
-remove_squiggles:
-	rm -rf $(foreach D,$(ALL_DIRS),$(D)/*~)
 
 # -------------------------------------------------------------------------
 
-include ../config/slave/chips/$(CONFIG_SLAVE_CHIP)/targets.mk
+include ../config/slave/chips/$(CONFIG_SLAVE_CHIP)/post_build.mk
 
-PHONY += chip_specific
+PHONY += chip_specific_post_build
 
 # -------------------------------------------------------------------------
 
