@@ -1,0 +1,23 @@
+menu "Master configuration"
+
+
+choice MASTER_PLATFORM
+	   prompt "Host platform"
+	   help
+		 This setting determines the toolchain which is used to produce the compatible binary for the master device
+
+config MASTER_RASPBERRY_PI3
+	   bool "Raspberry Pi 3"
+
+config MASTER_NATIVE
+	   bool "This host"
+
+endchoice
+
+
+source "master/kconfig/Kconfig.can"
+source "master/kconfig/Kconfig.rsync"
+source "master/kconfig/Kconfig.toolchain"
+
+
+endmenu

@@ -1,0 +1,29 @@
+menu "Target board"
+
+choice SLAVE_BOARD
+	   prompt "Selected board"
+	   help 
+	     The name of the board for running the slave firmware
+
+config SLAVE_BOARD_STUDICA_BLACKHAWK
+	   bool "Studica Blackhawk"
+
+config SLAVE_BOARD_ESP32_DEVKITC
+	   bool "ESP32-DevKitC"
+
+endchoice # choice SLAVE_BOARD --------------------------------
+
+
+# невидимые параметры -----------------------------------
+
+config SLAVE_BOARD_VENDOR
+	   string
+	   default "studica"   if SLAVE_BOARD_STUDICA_BLACKHAWK
+	   default "espressif" if SLAVE_BOARD_ESP32_DEVKITC
+
+config SLAVE_BOARD_PREFIX
+	   string
+	   default "blackhawk"     if SLAVE_BOARD_STUDICA_BLACKHAWK
+	   default "esp32_devkitc" if SLAVE_BOARD_ESP32_DEVKITC
+
+endmenu

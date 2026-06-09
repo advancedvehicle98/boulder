@@ -1,0 +1,75 @@
+soc-outdir := $(objtree)/$(slave-prefix)/$(soc-complete-prefix)
+
+libsam := libsam_sam3x8e_gcc_rel
+
+soc-gcc-dir := $(soc-outdir)/gcc
+soc-incdir  := $(soc-outdir)/include
+
+soc-outdir-targets := \
+	$(soc-outdir)/$(libsam).a \
+	$(soc-incdir)/libsam \
+	$(soc-gcc-dir)
+
+startup = startup_sam3xa
+
+# пока ArduinoCore является надёжным источником,
+# откуда можно взять эту старую либу
+soc-lib-url := https://github.com/arduino/ArduinoCore-sam/archive/refs/heads/master.zip
+
+soc-zip := master.zip
+soc-lib-dir := ArduinoCore-sam-master
+
+phony += soc-prerequisites
+soc-prerequisites: $(downloads)/$(soc-zip) soc-copy-targets
+
+$(downloads)/$(soc-zip):
+	$(q)curl -fSL $(soc-lib-url) -o $@
+
+phony += soc-copy-targets
+soc-copy-targets: $(soc-outdir-targets)
+
+$(soc-outdir)/$(libsam).a: $(soc-outdir)/$(soc-lib-dir)
+	$(q)cp -f $</variants/arduino_due_x/$(libsam).a $@
+
+$(soc-incdir)/libsam: $(soc-outdir)/$(soc-lib-dir)
+	$(q)mkdir -p $@
+	$(q)cp -f $</system/libsam/include/*.h $@
+
+$(soc-gcc-dir): $(soc-outdir)/$(soc-lib-dir)
+	$(q)mkdir -p $@
+	$(q)cp -f $</variants/arduino_due_x/linker_scripts/gcc/*.ld $@
+	$(q)cp -f $</system/CMSIS/Device/ATMEL/sam3xa/source/$(startup).c $@
+
+$(soc-outdir)/$(soc-lib-dir):
+	$(q)mkdir -p $(soc-outdir)
+	$(q)unzip $(downloads)/$(soc-zip) -d $(soc-outdir)
+
+
+# ============================================================
+
+include $(archtree)/Makefile.arch
+
+
+# ============================================================
+
+# че на выходе получается
+
+objs += $(soc-complete-prefix)/$(startup).o
+libs += $(libsam:lib%=%)
+
+# Makefile.arch ещё че то может доабвить
+cflags += -I$(soc-incdir) -D__SAM3X8E__
+asflags += -I$(soc-incdir) -D__SAM3X8E__
+
+ldflags += \
+	-L$(soc-outdir) \
+	-Wl,--entry=Reset_Handler -Wl,--defsym=STACK_SIZE=$(CONFIG_STACK_SIZE)
+
+ifeq ($(SAM3X8E_LINK_STACK_SECTION),y)
+ldflags += -T $(soc-gcc-dir)/sram.ld
+else
+ldflags += -T $(soc-gcc-dir)/flash.ld
+endif
+
+
+

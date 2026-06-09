@@ -28,4 +28,7 @@
 #define _assert( EXPR ) typedef int _##__LINE__[ ( EXPR ) ? 1 : -1 ]
 
 
+#define _allowed_can_bitrate_values { 5, 10, 25, 50, 100, 250, 500, 800, 1000 }
+
+
 #endif // ! __BOULDER_COMMON_DEFINES_H

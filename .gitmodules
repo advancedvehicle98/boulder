@@ -4,3 +4,9 @@
 [submodule "modules/dronecan_dsdlc"]
 	path = modules/dronecan_dsdlc
 	url = https://github.com/dronecan/dronecan_dsdlc/
+[submodule "modules/googletest"]
+	path = modules/googletest
+	url = https://github.com/google/googletest
+[submodule "modules/cmocka"]
+	path = modules/cmocka
+	url = https://gitlab.com/cmocka/cmocka

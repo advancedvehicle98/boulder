@@ -1,0 +1,10 @@
+rsync-dest-user    := $(patsubst "%",%,$(CONFIG_RSYNC_DEST_USER))
+rsync-dest-ip      := $(patsubst "%",%,$(CONFIG_RSYNC_DEST_IP))
+rsync-install-path := $(patsubst "%",%,$(CONFIG_RSYNC_INSTALL_PATH))
+
+rsync-src  := $(objtree)/master/master
+rsync-dest := $(rsync-dest-user)@$(rsync-dest-ip):$(rsync-install-path)
+
+phony += rsync
+rsync: master
+	$(q)rsync -a $(rsync-src) $(rsync-dest)

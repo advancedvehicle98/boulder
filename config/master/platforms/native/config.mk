@@ -1,3 +1,0 @@
-export CONFIG_MASTER_PLATFORM_NAME = native
-
-export CONFIG_MASTER_TOOLCHAIN = x86_64-linux-gnu

@@ -1,0 +1,36 @@
+cmocka-subdir  := $(srctree)/modules/cmocka
+cmocka-outdir  := $(cmocka-subdir)/out
+
+cmocka-include := $(cmocka-subdir)/include
+cmocka-libdir := $(cmocka-outdir)/src
+cmocka-lib := $(cmocka-libdir)/libcmocka.so
+
+# ---------------------------------------------------------
+
+phony += tests
+tests: $(cmocka-lib) _tests
+
+phony += _tests
+_tests: cflags  += -I$(cmocka-include)
+_tests: ldflags += -L$(cmocka-libdir)
+_tests: libs    += cmocka
+_tests:
+	$(q)$(MAKE) -C $(master-subdir) tests
+# $(q)$(MAKE) -C $(slave-subdir) tests
+
+# ---------------------------------------------------------
+
+$(cmocka-lib): $(cmocka-outdir)
+	$(q)cmake -S $(cmocka-subdir) -B $(cmocka-outdir)
+	$(q)cmake --build $(cmocka-outdir)
+
+$(cmocka-outdir):
+	$(q)mkdir -p $@
+
+# ---------------------------------------------------------
+
+phony += clean-cmocka
+clean-cmocka:
+	$(q)rm -rf $(cmocka-outdir)
+
+clean-all-targets == clean-cmocka

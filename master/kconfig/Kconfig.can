@@ -1,0 +1,9 @@
+menu "SocketCAN"
+
+config MASTER_CAN_DEFAULT_IF_NAME
+	   string "Network interface name"
+	   default "can0"
+	   help
+		 Default name of the network interface to probe (can be looked up via ifconfig/ip addr)
+
+endmenu

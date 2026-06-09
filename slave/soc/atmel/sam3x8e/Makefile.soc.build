@@ -1,0 +1,2 @@
+$(soc-complete-prefix)/$(startup).o: $(soc-gcc-dir)/$(startup).c
+	$(q)$(cc) $(cflags) -c $^ -o $@

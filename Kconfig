@@ -1,0 +1,15 @@
+mainmenu "Boulder configuration"
+
+
+# общие настройки
+menu "General settings"
+
+endmenu
+
+source "scripts/kconfig/Kconfig.can"
+
+
+
+
+source "master/Kconfig"
+source "slave/Kconfig"

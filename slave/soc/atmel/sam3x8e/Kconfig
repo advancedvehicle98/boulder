@@ -1,0 +1,16 @@
+menu "Atmel SAM3X8E"
+
+config SAM3X8E_LINK_STACK_SECTION
+	   bool "Add .stack section"
+	   default n
+	   help
+		 Link with .stack section (use sram.ld instead of flash.ld)
+
+config SAM3X8E_USE_CAN1
+	   bool "Enable CAN1"
+	   default y if SLAVE_BOARD_STUDICA_BLACKHAWK
+	   default n
+	   help
+		 Use CAN1 interface instead of CAN0
+
+endmenu

@@ -1,22 +1,21 @@
 #include <slave/state.h>
 
+#include <slave/can.h>
+
+#include <libsam/can.h>
 #include <stdbool.h>
 
 
 boulder_init_error_t
 slave_init( __STATE boulder_slave_state_t *s )
 {
-
 	// настройка CAN-шины
-	
-	{
-		can_init_error_t init_error;
-		can_state_t *can = &( s->can );
+	can_init_error_t init_error;
+	can_state_t *can = &( s->can );
 
-		do {
-			init_error = slave_can_init( can );
-		} while ( init_error != CAN_INIT_SUCCESS );
-	}
+	do {
+		init_error = slave_can_init( can );
+	} while ( init_error != CAN_INIT_SUCCESS );
 	
 	return SLAVE_INIT_SUCCESS;
 }

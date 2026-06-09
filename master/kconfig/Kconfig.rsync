@@ -1,0 +1,15 @@
+menu "Rsync"
+
+config RSYNC_INSTALL_PATH
+	   string  "Boulder installation path (via rsync)"
+	   default "/opt/boulder"
+
+config RSYNC_DEST_IP
+	   string  "Rsync destination IP"
+	   default "localhost"
+
+config RSYNC_DEST_USER
+	   string  "User of the target device, via whom the boulder installation is permitted"
+	   default "root"
+
+endmenu

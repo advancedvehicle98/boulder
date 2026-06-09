@@ -1,0 +1,16 @@
+dsdlc-exe := $(srctree)/modules/dronecan_dsdlc/dronecan_dsdlc.py
+
+export dsdl-path := $(gentree)/dsdl
+
+dsdl-dronecan-path := $(srctree)/modules/DSDL/dronecan
+dsdl-uavcan-path   := $(srctree)/modules/DSDL/uavcan
+
+dsdl-namespaces := \
+	$(dsdl-dronecan-path) \
+	$(dsdl-uavcan-path)
+
+phony += dsdl
+dsdl: $(dsdl-path)
+
+$(dsdl-path):
+	$(q)$(dsdlc-exe) -O $(dsdl-path) $(dsdl-namespaces)

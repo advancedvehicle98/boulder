@@ -1,0 +1,27 @@
+menu "CPU architecture"
+
+
+# невидимые параметры -----------------------------------
+
+
+# -----------------------------------------------------------
+
+config SLAVE_ARCH_ARM_CORTEX_M3
+	   def_bool SLAVE_SOC_ATMEL_SAM3X8E
+
+config SLAVE_SLAVE_ARCH_TENSILICA_XTENSA_LX7
+	   def_bool SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
+
+# -----------------------------------------------------------
+
+config SLAVE_ARCH_PREFIX
+	   string
+	   default "xtensa" if SLAVE_SLAVE_ARCH_TENSILICA_XTENSA_LX7
+	   default "arm"    if SLAVE_ARCH_ARM_CORTEX_M3
+
+config SLAVE_ARCH_SUFFIX
+	   string
+	   default "lx7"       if SLAVE_SLAVE_ARCH_TENSILICA_XTENSA_LX7
+	   default "cortex_m3" if SLAVE_ARCH_ARM_CORTEX_M3
+
+endmenu

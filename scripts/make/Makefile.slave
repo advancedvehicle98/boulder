@@ -1,0 +1,6 @@
+export slave-prefix = slave
+slave-subdir := $(srctree)/$(slave-prefix)
+
+phony += slave
+slave:
+	$(q)$(MAKE) -C $(slave-subdir)

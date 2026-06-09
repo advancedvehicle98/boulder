@@ -1,0 +1,10 @@
+cflags += \
+	-Dprintf=iprintf \
+	--param max-inline-insns-single=500 \
+	-mcpu=cortex-m3 \
+	-mthumb \
+	-mlong-calls
+
+asflags += \
+	-mcpu-cortex-m3 \
+	-mthumb

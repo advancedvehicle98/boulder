@@ -1,0 +1,6 @@
+export master-prefix = master
+master-subdir := $(srctree)/$(master-prefix)
+
+phony += master
+master:
+	$(q)$(MAKE) -C $(master-subdir)

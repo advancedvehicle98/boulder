@@ -1,6 +1,6 @@
 #include <master/state.h>
 
-#include <common/can.h>
+#include <common/defines.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -74,9 +74,16 @@ _try_as_can_bitrate( __STATE       boulder_state_args_t *args,
 
 	uint32_t bitrate = atoi( tail[ 0 ] );
 
-	if (    bitrate < CAN_BITRATE_MIN
-		 || bitrate > CAN_BITRATE_MAX )
-		return 0;
+	const uint32_t allowed_values[] = _allowed_can_bitrate_values;
+	const size_t allowed_values_count = sizeof( allowed_values )
+		                              / sizeof( uint32_t );
+	
+	int i = 0;
+
+	for ( ; i < allowed_values_count; ++i )
+		if ( bitrate == allowed_values[ i ] ) break;
+
+	if ( i == allowed_values_count ) return 0;
 	
 	can_state_args_t *can = &( args->can );	
 	can->bitrate = bitrate;

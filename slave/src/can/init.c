@@ -9,10 +9,10 @@ slave_can_init( __STATE can_state_t *s )
 	// делаем специфичную для микроконтроллера настройку ---------------------------------
 	
 	{
-		can_chip_specific_state_t *specifics = &( s->specifics );
+		can_soc_state_t *specifics = &( s->specifics );
 		can_init_error_t init_state;
 
-		init_state = slave_can_chip_specific_init( specifics );
+		init_state = slave_soc_can_init( specifics );
 
 		if ( init_state != CAN_INIT_SUCCESS ) return init_state;
 	}

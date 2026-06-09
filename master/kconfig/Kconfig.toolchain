@@ -1,0 +1,8 @@
+menu "Toolchain"
+
+config MASTER_TOOLCHAIN
+	   string
+	   default "aarch64-linux-gnu" if MASTER_RASPBERRY_PI3
+	   default ""                  if MASTER_NATIVE
+
+endmenu

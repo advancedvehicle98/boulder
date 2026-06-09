@@ -132,7 +132,8 @@ master_can_init( __STATE       can_state_t      *s,
 	// настройка битрейта -----------------------------------------
 
 	{
-		bitrate = args->bitrate ? args->bitrate : CONFIG_CAN_BITRATE;
+		bitrate = args->bitrate ? args->bitrate : CONFIG_CAN_BITRATE_KHZ;
+		bitrate *= 1000; // перевод в Гц
 		
 		can_set_bitrate_error_t bitrate_status = master_can_set_bitrate( ifr.ifr_ifindex, bitrate );
 

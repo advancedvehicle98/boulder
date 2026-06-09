@@ -1,0 +1,13 @@
+kconfig-subdir := $(srctree)/modules/kconfig
+
+export menuconfig-prefix = menuconfig
+
+phony += menuconfig
+menuconfig:
+	$(q)$(MAKE) -C $(kconfig-subdir)
+	$(q)$(objtree)/$(menuconfig-prefix)/mconf $(kconfig)
+
+clean-targets += menuconfig-clean
+phony += menuconfig-clean
+menuconfig-clean:
+	$(q)$(MAKE) -C $(kconfig-subdir) clean
