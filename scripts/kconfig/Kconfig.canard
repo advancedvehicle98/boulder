@@ -1,0 +1,11 @@
+menu "Canard"
+
+config CANARD_MASTER_POOL_SIZE
+	   int "Master memory pool size (bytes)"
+	   default 24000
+
+config CANARD_SLAVE_POOL_SIZE
+	   int "Slave memory pool size (bytes)"
+	   default 6000
+
+endmenu

@@ -43,118 +43,115 @@ master_can_init( __STATE       can_state_t      *s,
 	
 	// открывает сокет --------------------------------------------------
 	
-	{	
-		fd = socket( PF_CAN, SOCK_RAW, CAN_RAW );
-		if ( _unlikely( fd < 0 ) ) return CAN_INIT_ERROR_NO_SOCKET;
-	}
+	fd = socket( PF_CAN, SOCK_RAW, CAN_RAW );
+	if ( _unlikely( fd < 0 ) ) return CAN_INIT_ERROR_NO_SOCKET;
 	
 	// тащим информацию об интерфейсе ------------------------------------
 
 	// пока это надо чисто штобы получить номер инетрфейса
 	// это нужно будет для привязки сокета к CAN (см. следующий шаг)
+	
+	strncpy( ifr.ifr_name, if_name, MASTER_CAN_IF_NAME_LEN-1 );
 
-	{	
-		strncpy( ifr.ifr_name, if_name, MASTER_CAN_IF_NAME_LEN-1 );
+	status = ioctl( fd, SIOCGIFINDEX, &ifr );
 
-		status = ioctl( fd, SIOCGIFINDEX, &ifr );
+	if ( _unlikely( status != EXIT_SUCCESS ) ) {
+		error = CAN_INIT_ERROR_IOCTL;
+		goto _master_can_init_defer_close_socket;
+	}
 
-		if ( _unlikely( status != EXIT_SUCCESS ) ) {
-			error = CAN_INIT_ERROR_IOCTL;
-			goto _master_can_init_defer_close_socket;
-		}
-
-		if ( _unlikely( ifr.ifr_ifindex < 0 ) ) {
-			error = CAN_INIT_ERROR_WRONG_IFR_INDEX;
-			goto _master_can_init_defer_close_socket;
-		}
+	if ( _unlikely( ifr.ifr_ifindex < 0 ) ) {
+		error = CAN_INIT_ERROR_WRONG_IFR_INDEX;
+		goto _master_can_init_defer_close_socket;
 	}
 
 	// привязываем сокет к CAN -----------------------------------------
 
-	{
-		struct sockaddr_can address;
+	struct sockaddr_can address;
 
-		address.can_family = AF_CAN;
-		address.can_ifindex = ifr.ifr_ifindex;
+	address.can_family = AF_CAN;
+	address.can_ifindex = ifr.ifr_ifindex;
 
-		status = bind( fd, (struct sockaddr *) &address, sizeof( struct sockaddr_can ) );
+	status = bind( fd, (struct sockaddr *) &address, sizeof( struct sockaddr_can ) );
 
-		if ( _unlikely( status < 0 ) ) {
-			error = CAN_INIT_ERROR_CANNOT_BIND;
-			goto _master_can_init_defer_close_socket;
-		}
+	if ( _unlikely( status < 0 ) ) {
+		error = CAN_INIT_ERROR_CANNOT_BIND;
+		goto _master_can_init_defer_close_socket;
 	}
 	
 	// настройка сокета --------------------------------------------------
 	
 #define _ENABLE &enable, sizeof( enable )
 	
-	{
-		const int32_t enable = 1;
-		bool configuration_error_occured = false;
+	const int32_t enable = 1;
+	bool configuration_error_occured = false;
 
-		// включаем учёт времени прибытия сообщений
-		// (хз как по русски красиво сказать timestamp)
-		status = setsockopt( fd, SOL_SOCKET, SO_TIMESTAMP, _ENABLE );
-		configuration_error_occured |= status < 0;
+	// включаем учёт времени прибытия сообщений
+	// (хз как по русски красиво сказать timestamp)
+	status = setsockopt( fd, SOL_SOCKET, SO_TIMESTAMP, _ENABLE );
+	configuration_error_occured |= status < 0;
 
-		// разрешаем самим себе отправлять сообщения
-		status = setsockopt( fd, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, _ENABLE );
-		configuration_error_occured |= status < 0;
+	// разрешаем самим себе отправлять сообщения
+	status = setsockopt( fd, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, _ENABLE );
+	configuration_error_occured |= status < 0;
 
-		// делаем сокет неблокирующим
-		status = fcntl( fd, F_SETFL, O_NONBLOCK );
-		configuration_error_occured |= status < 0;
+	// делаем сокет неблокирующим
+	status = fcntl( fd, F_SETFL, O_NONBLOCK );
+	configuration_error_occured |= status < 0;
 		
-		if ( _unlikely( configuration_error_occured ) ) {
-			error = CAN_INIT_ERROR_FAILED_CONFIGURATION;
-			goto _master_can_init_defer_close_socket;
-		}
+	if ( _unlikely( configuration_error_occured ) ) {
+		error = CAN_INIT_ERROR_FAILED_CONFIGURATION;
+		goto _master_can_init_defer_close_socket;
 	}
 	
 #undef _ENABLE
 	
 	// проверяем ошибки с сокета ------------------------------------------------
 
-	{
-		int32_t socket_error = 0;
-		socklen_t socket_error_len = sizeof( socket_error );
+	int32_t socket_error = 0;
+	socklen_t socket_error_len = sizeof( socket_error );
 
-		getsockopt( fd, SOL_SOCKET, SO_ERROR, &socket_error, &socket_error_len );
+	getsockopt( fd, SOL_SOCKET, SO_ERROR, &socket_error, &socket_error_len );
 		
-		if ( _unlikely( socket_error ) ) {
-			_handle_socket_error( socket_error );
-			error = CAN_INIT_ERROR_FAILED_SOCKET_VALIDATION;
-			goto _master_can_init_defer_close_socket;
-		}
+	if ( _unlikely( socket_error ) ) {
+		_handle_socket_error( socket_error );
+		error = CAN_INIT_ERROR_FAILED_SOCKET_VALIDATION;
+		goto _master_can_init_defer_close_socket;
 	}
 	
 	// настройка битрейта -----------------------------------------
 
-	{
-		bitrate = args->bitrate ? args->bitrate : CONFIG_CAN_BITRATE_KHZ;
-		bitrate *= 1000; // перевод в Гц
+	bitrate = args->bitrate ? args->bitrate : CONFIG_CAN_BITRATE_KHZ;
+	bitrate *= 1000; // перевод в Гц
 		
-		can_set_bitrate_error_t bitrate_status = master_can_set_bitrate( ifr.ifr_ifindex, bitrate );
+	can_set_bitrate_error_t bitrate_status = master_can_set_bitrate( ifr.ifr_ifindex, bitrate );
 
-		if ( bitrate_status != CAN_SET_BITRATE_SUCCESS ) {
-			error = CAN_INIT_ERROR_BITRATE_FAIL;
-			master_can_set_bitrate_print_error( bitrate_status );
-			goto _master_can_init_defer_close_socket;
-		}
+	if ( bitrate_status != CAN_SET_BITRATE_SUCCESS ) {
+		error = CAN_INIT_ERROR_BITRATE_FAIL;
+		master_can_set_bitrate_print_error( bitrate_status );
+		goto _master_can_init_defer_close_socket;
 	}
+
+	// настройка canard ------------------------------------------
+
+	canardInit( &( s->canard ),
+				s->canard_pool, CONFIG_CANARD_MASTER_POOL_SIZE,
+				master_can_on_receive,
+				master_can_should_accept_transfer,
+				s );
+
+	canardSetLocalNodeID( &( s->canard ), CONFIG_DRONECAN_MASTER_ID );
 	
 	// присвание говна идёт строго в конце после всего остального
 	// когда мы точно знаем, что с полями всё будет в порядке
-	{
-		strncpy( s->if_name, if_name, MASTER_CAN_IF_NAME_LEN );
-
-		s->bitrate   = bitrate;
-		s->if_index  = ifr.ifr_ifindex;
-		s->socket_fd = fd;
 	
-		s->ready = true;
-	}
+	strncpy( s->if_name, if_name, MASTER_CAN_IF_NAME_LEN );
+		
+	s->bitrate   = bitrate;
+	s->if_index  = ifr.ifr_ifindex;
+	s->socket_fd = fd;
+	
+	s->ready = true;
 	
 	return CAN_INIT_SUCCESS;
 

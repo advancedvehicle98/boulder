@@ -2,8 +2,10 @@
 #define __BOULDER_MASTER_CAN_H
 
 
+#include <common/config.h>
 #include <common/defines.h>
 
+#include <canard.h>
 #include <net/if.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -33,10 +35,15 @@ typedef enum {
 
 
 typedef struct _can_state_t {
+	uint32_t bitrate;
+	
 	char     if_name[ MASTER_CAN_IF_NAME_LEN ];
 	uint32_t if_index;
 	int32_t  socket_fd;
-	uint32_t bitrate;
+
+	CanardInstance canard;
+	uint8_t canard_pool[ CONFIG_CANARD_MASTER_POOL_SIZE ];
+	
 	bool     ready;
 } can_state_t;
 
@@ -57,9 +64,18 @@ void master_can_deinit( __STATE can_state_t *s );
 // can/init.c
 can_init_error_t master_can_init( __STATE can_state_t *s, __IN const can_state_args_t *args );
 void master_can_init_print_error( __IN const can_init_error_t e );
+// can/on_receive.c
+void master_can_on_receive( __STATE CanardInstance   *canard,
+							__IN    CanardRxTransfer *rx );
 // can/set_bitrate.c
 can_set_bitrate_error_t master_can_set_bitrate( __IN const uint32_t if_name, __IN const uint32_t bitrate );
 void master_can_set_bitrate_print_error( __IN const can_set_bitrate_error_t e );
+// can/should_accept_transfer.c
+bool master_can_should_accept_transfer( __IN const CanardInstance     *canard,
+										__IN       uint64_t           *out_data_type_sig,
+										__IN       uint16_t            data_type_id,
+										__IN       CanardTransferType  trx_type,
+										__IN       uint8_t             src_id );
 
 
 #endif // ! __MASTER_CAN_H

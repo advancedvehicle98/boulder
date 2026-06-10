@@ -4,6 +4,8 @@ source "slave/boards/Kconfig"
 source "slave/soc/Kconfig"
 source "slave/arch/Kconfig"
 
-# source "slave/Kconfig.toolchain"
+config UART_DEBUG_MSGS
+	   bool "Enable UART debug messages"
+	   default n
 
 endmenu

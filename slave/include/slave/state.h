@@ -16,6 +16,7 @@ typedef enum {
 
 typedef enum {
 	SLAVE_INIT_SUCCESS,
+	SLAVE_INIT_FAILED_CAN_INIT
 } boulder_init_error_t;
 
 

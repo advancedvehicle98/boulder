@@ -26,7 +26,7 @@ include $(scripts)/make/Makefile.canard
 # ==============================================================
 
 can-prefix := can
-can-objs-y := init.o
+can-objs-y := init.o on_receive.o should_accept_transfer.o
 
 objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y))
@@ -43,7 +43,7 @@ ifeq ($(CONFIG_SLAVE_TOOLCHAIN_OBJCOPY_PATH),)
 	$(error Не указан путь к objcopy (см. CONFIG_SLAVE_TOOLCHAIN_OBJCOPY_PATH в menuconfig))
 endif
 
-cc := $(CONFIG_SLAVE_TOOLCHAIN_CC_PATH)
+cc    := $(CONFIG_SLAVE_TOOLCHAIN_CC_PATH)
 objcp := $(CONFIG_SLAVE_TOOLCHAIN_OBJCOPY_PATH)
 
 ifeq ($(CONFIG_SLAVE_TOOLCHAIN_ASM_PATH),)

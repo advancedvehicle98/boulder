@@ -17,6 +17,16 @@ slave_can_init( __STATE can_state_t *s )
 
 	if ( init_state != CAN_INIT_SUCCESS ) return init_state;
 
+	// настройка canard --------------------------------------------------------
+
+	canardInit( &( s->canard ),
+				s->canard_pool, CONFIG_CANARD_SLAVE_POOL_SIZE,
+				slave_can_on_receive,
+				slave_can_should_accept_transfer,
+				s );
+
+	canardSetLocalNodeID( &( s->canard ), CONFIG_DRONECAN_SLAVE_ID );
+
 	// окончательно инициализируем структуру с состоянием -------------------
 	
 	s->ready = true;

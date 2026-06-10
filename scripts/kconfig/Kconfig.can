@@ -1,6 +1,7 @@
 menu "CAN interface"
 
 source "scripts/kconfig/Kconfig.dronecan"
+source "scripts/kconfig/Kconfig.canard"
 
 
 choice CAN_BITRATE_CHOICE
