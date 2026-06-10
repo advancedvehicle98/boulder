@@ -6,12 +6,6 @@ config SAM3X8E_LINK_STACK_SECTION
 	   help
 		 Link with .stack section (use sram.ld instead of flash.ld)
 
-config SAM3X8E_USE_CAN1
-	   bool "Enable CAN1"
-	   default y if SLAVE_BOARD_STUDICA_BLACKHAWK
-	   default n
-	   help
-		 Use CAN1 interface instead of CAN0
 
 choice SAM3X8E_MAIN_CLOCK_SOURCE
 	   prompt "Select main clock source clock"
@@ -23,5 +17,29 @@ config SAM3X8E_USE_FAST_RC
 	   bool "Embedded fast RC oscillator (12 MHz)"
 
 endchoice
+
+
+config SAM3X8E_USE_CAN1
+	   bool "Enable CAN1"
+	   default y if SLAVE_BOARD_STUDICA_BLACKHAWK
+	   default n
+	   help
+		 Use CAN1 interface instead of CAN0
+
+config SAM3X8E_CAN_TX_MBOX_COUNT
+	   int "Transmitter mailbox count"
+	   default 2
+	   help
+		 Sets the number of transmitter mailboxes (from 1 to 4)
+
+# невидимые параметры --------------------------------------------
+
+config SAM3X8E_CAN_TX_MBOX_COUNT_MAX
+	   int
+	   default 4
+	   
+config SAM3X8E_CAN_TX_MBOX_COUNT_MIN
+	   int
+	   default 1
 
 endmenu

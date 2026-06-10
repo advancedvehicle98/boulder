@@ -1,36 +1,34 @@
 menu "CAN interface"
 
+source "scripts/kconfig/Kconfig.dronecan"
+
+
 choice CAN_BITRATE_CHOICE
 	   prompt "CAN bitrate"
 
 config CAN_BITRATE_5KHZ
 	   bool "5 KHz"
-
 config CAN_BITRATE_10KHZ
 	   bool "10 KHz"
-
 config CAN_BITRATE_25KHZ
 	   bool "25 KHz"
-
 config CAN_BITRATE_50KHZ
 	   bool "50 KHz"
-
 config CAN_BITRATE_125KHZ
 	   bool "125 KHz"
-
 config CAN_BITRATE_250KHZ
 	   bool "250 KHz"
-
 config CAN_BITRATE_500KHZ
 	   bool "500 KHz"
-
 config CAN_BITRATE_800KHZ
-	   bool "800 KHz"
-	   
+	   bool "800 KHz"	   
 config CAN_BITRATE_1000KHZ
 	   bool "1000 KHz"
 
 endchoice
+
+
+# невидимые параметры ===========================================
 
 config CAN_BITRATE_KHZ
 	   int

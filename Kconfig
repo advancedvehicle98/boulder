@@ -4,11 +4,25 @@ mainmenu "Boulder configuration"
 # общие настройки
 menu "General settings"
 
+config SUPPRESS_WARNING
+	   bool "Suppress warning messages"
+	   default n
+	   help
+		 Disables compilation warnings output (-w option)
+
 config DEBUG
 	   bool "Enable debug features"
+	   default n
 	   help
 		 Enables debug compilation options and macros
-		 default n
+
+config COVERAGE
+	   bool "Build for coverage"
+	   depends on DEBUG
+	   default n
+	   help
+		 Produce .gcno files for creating coverage reports
+
 
 choice OPT_LEVEL_CHOICE
 	   prompt "Optimization level"
@@ -39,7 +53,7 @@ endchoice
 
 config OPT_LEVEL
 	   string
-	   default "-O0"    if OPT-O0
+	   default "-O0"    if OPT-O0 || DEBUG
 	   default "-O1"    if OPT_O1
 	   default "-O2"    if OPT_O2
 	   default "-O3"    if OPT_O3

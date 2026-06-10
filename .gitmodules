@@ -10,3 +10,6 @@
 [submodule "modules/cmocka"]
 	path = modules/cmocka
 	url = https://gitlab.com/cmocka/cmocka
+[submodule "modules/libcanard"]
+	path = modules/libcanard
+	url = https://github.com/dronecan/libcanard/

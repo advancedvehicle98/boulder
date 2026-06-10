@@ -8,7 +8,8 @@
 
 
 typedef enum {
-	CAN_INIT_SUCCESS
+	CAN_INIT_SUCCESS,
+	CAN_INIT_TIMEOUT
 } can_init_error_t;
 
 

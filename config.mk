@@ -1,10 +1,11 @@
-asm  = gcc
-cc   = gcc
-ld   = gcc
-lex  = flex
-yacc = bison
+asm   = gcc
+cc    = gcc
+ld    = gcc
+lex   = flex
+objcp = objcopy
+yacc  = bison
 
-export cc ld yacc lex
+export asm cc ld yacc objcp lex
 
 
 export python = python3

@@ -11,6 +11,12 @@ config SLAVE_TOOLCHAIN_CC_PATH
 config SLAVE_TOOLCHAIN_LD_PATH
 	   string "Linker executable path (if not set, it is assumed to be the same as the compiler executable)"
 
+config SLAVE_TOOLCHAIN_ASM_PATH
+	   string "Assembler executable path (if not set, it is assumed to be the same as the compiler executable)"
+
+config SLAVE_TOOLCHAIN_OBJCOPY_PATH
+	   string "Objcopy executable path"
+
 endmenu
 
 

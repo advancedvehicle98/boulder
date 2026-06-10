@@ -1,0 +1,15 @@
+menu "DroneCAN"
+
+config DRONECAN_SLAVE_ID
+	   hex "Slave ID"
+	   default 0x1
+	   help
+		 DroneCAN ID for the slave device
+
+config DRONECAN_MASTER_ID
+	   hex "Master ID"
+	   default 0x2
+	   help
+		 DroneCAN ID for the master device
+
+endmenu

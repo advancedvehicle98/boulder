@@ -1,0 +1,13 @@
+canard-prefix  := canard
+canard-srctree := $(modtree)/libcanard
+canard-outdir  := $(objtree)/$(prefix)/$(canard-prefix)
+
+
+objs += $(canard-prefix)/canard.o
+
+cflags += -I$(canard-srctree)
+
+# ============================================================
+
+$(canard-outdir)/canard.o: $(canard-srctree)/canard.c
+	$(q)$(cc) $(cflags) -std=c11 -c $^ -o $@

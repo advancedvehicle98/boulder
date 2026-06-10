@@ -18,6 +18,11 @@ all: objtree-prefixes $(target)
 
 # ==============================================================
 
+include $(scripts)/make/Makefile.canard
+
+
+# ==============================================================
+
 net-prefix := net
 net-objs-y := \
 	open_netlink_socket.o \

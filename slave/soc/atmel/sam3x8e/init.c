@@ -3,12 +3,16 @@
 #include <common/config.h>
 #include <soc/state.h>
 
+#include <libsam/include/pio.h>
+#include <libsam/include/pmc.h>
 #include <libsam/sam3xa/include/sam3xa.h>
 
 
 static uint32_t _clock_init( void );
 static void _eefc_init( void );
 static uint32_t _measure_main_clock( void );
+static void _periph_clock_init( void );
+static void _pio_init( void );
 static void _plla_init( void );
 
 
@@ -18,8 +22,9 @@ soc_init_error_t
 slave_soc_init( __STATE soc_state_t *soc )
 {
 	_eefc_init();
-
 	soc->mclk = _clock_init();
+	_periph_clock_init();
+	_pio_init();
 	
 	return SOC_INIT_SUCCESS;
 }
@@ -54,9 +59,7 @@ _clock_init( void )
 
 	// второй шаг 28.12
 	
-	uint32_t mclk = _measure_main_clock();
-
-	return mclk;
+	return _measure_main_clock();
 }
 
 
@@ -71,8 +74,35 @@ uint32_t
 _measure_main_clock( void )
 {
 	while ( ! ( PMC->CKGR_MCFR & CKGR_MCFR_MAINFRDY ) ) { }
-	
 	return PMC->CKGR_MCFR & CKGR_MCFR_MAINF_Msk;
+}
+
+
+void
+_periph_clock_init( void )
+{
+#ifdef CONFIG_SAM3X8E_USE_CAN1
+	const uint32_t can_id = ID_CAN1;
+#else
+	const uint32_t can_id = ID_CAN0;
+#endif
+	
+	pmc_enable_periph_clk( can_id );
+}
+
+
+void
+_pio_init( void )
+{
+#ifdef CONFIG_SAM3X8E_USE_CAN1
+	PIO_Configure( PIOB, PIO_PERIPH_A,
+				   PIO_PB15A_CANRX1 | PIO_PB14A_CANTX1,
+				   PIO_DEFAULT );
+#else
+	PIO_Configure( PIOA, PIO_PERIPH_A,
+				   PIO_PA1A_CANRX0 | PIO_PA0A_CANTX0,
+				   PIO_DEFAULT );
+#endif
 }
 
 

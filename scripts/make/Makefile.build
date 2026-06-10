@@ -25,18 +25,31 @@
 # ===============================================================
 
 
-cflags += -I$(gentree) -I$(srctree)/include -Wall
+cflags += \
+	-I$(gentree) -I$(srctree)/include \
+	$(patsubst "%",%,$(CONFIG_OPT_LEVEL))
+
+ifeq ($(CONFIG_SUPPRESS_WARNING),y)
+	cflags += -w
+else
+	cflags += -Wall # -Wextra -Wpedantic
+endif
 
 ifeq ($(CONFIG_DEBUG),y)
-	cflags += -g -O0
-else
-	cflags += $(patsubst "%",%,$(CONFIG_OPT_LEVEL))
+	cflags += -g
+endif
+
+ifeq ($(CONFIG_COVERAGE),y)
+	cflags += -fprofile-arcs -ftest-coverage
 endif
 
 $(objtree)/$(prefix)/%.o: $(local-srctree)/%.c
 	$(q)$(cc) $(cflags) -c $^ -o $@
 
-asflags += _D__ASSEMBLY__ -Wall
+asflags += \
+	-I$(gentree) -I$(srctree)/include \
+	_D__ASSEMBLY__ \
+	-Wall
 
 $(objtree)/$(prefix)/%.o: $(local-srctree)/%.S
 	$(q)$(asm) $(asflags) -a $^ -o $@
