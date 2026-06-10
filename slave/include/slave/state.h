@@ -4,6 +4,8 @@
 
 #include <slave/can.h>
 
+#include <soc/state.h>
+
 #include <common/defines.h>
 
 
@@ -18,6 +20,7 @@ typedef enum {
 
 
 typedef struct _boulder_slave_state_t {
+	soc_state_t soc;
 	can_state_t can;
 } boulder_slave_state_t;
 

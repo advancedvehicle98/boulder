@@ -2,8 +2,11 @@
 #define __BOULDER_ATMEL_SAM3X8E_CAN_H
 
 
+#include <libsam/include/can.h>
+
+
 typedef struct _can_soc_state_t {
-	Can      *can;
+	Can *    can;
 	uint32_t periph_id;
 } can_soc_state_t;
 

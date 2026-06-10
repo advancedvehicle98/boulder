@@ -49,6 +49,8 @@ export cc ld
 board-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_VENDOR))
 board-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_PREFIX))
 
+board-complete-prefix := $(board-vendor)/$(board-prefix)
+
 soc-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_VENDOR))
 soc-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_PREFIX))
 
@@ -59,24 +61,31 @@ arch-suffix := $(patsubst "%",%,$(CONFIG_SLAVE_ARCH_SUFFIX))
 
 arch-complete-prefix := $(arch-prefix)/$(arch-suffix)
 
-boardtree := $(local)/board/$(board-vendor)/$(board-prefix)
+boardtree := $(local)/board/$(board-complete-prefix)
 soctree   := $(local)/soc/$(soc-complete-prefix)
 archtree  := $(local)/arch/$(arch-complete-prefix)
 
 include $(soctree)/Makefile.soc
 
-soc-can-prefix := can
-soc-can-obj-y  := init.c
+board-objs := init.o
 
-soc-objs := \
+soc-can-prefix := can
+soc-can-obj-y  := init.o
+
+soc-objs := init.o \
 	$(addprefix $(soc-can-prefix)/, $(soc-can-obj-y))
 
-objs += $(addprefix soc/$(soc-complete-prefix), $(soc-objs))
+objs += \
+	$(addprefix soc/$(soc-complete-prefix)/, $(soc-objs)) \
+	$(addprefix boards/$(board-complete-prefix)/, $(board-objs))
 
 # т.е. в каждом soc-е должен быть свой include, в котором есть soc, в котором есть перечень
 # обязательных заголовков
-cflags += -I$(soctree)/include
-asflags += -I$(soctree)/include
+board-include := $(soctree)/include
+board-include := $(addprefix -I, $(board-include))
+
+cflags  += $(board-include)
+asflags += $(board-include)
 
 # -------------------------------------------------------------
 
@@ -101,6 +110,36 @@ include $(scripts)/make/Makefile.build
 # это если для soc надо собирать бинарники, исходные
 # файлы которых лежат не по префиксам
 -include $(scripts)/make/Makefile.soc.build
+
+# -------------------------------------------------------------
+
+soc-objtree := $(objtree)/slave/soc/$(soc-complete-prefix)
+
+$(soc-objtree)/%.o: $(local)/soc/$(soc-complete-prefix)/%.c
+	$(q)$(cc) $(cflags) -c $^ -o $@
+
+soc-objtree/%.o: $(local)/soc/$(soc-complete-prefix)/%.S
+	$(q)$(asm) $(asflags) -c $^ -o $@
+
+# -------------------------------------------------------------
+
+arch-objtree := $(objtree)/slave/arch/$(arch-complete-prefix)
+
+$(arch-objtree)/%.o: $(local)/arch/$(arch-complete-prefix)/%.c
+	$(q)$(cc) $(cflags) -c $^ -o $@
+
+$(arch-objtree)/%.o: $(local)/arch/$(arch-complete-prefix)/%.S
+	$(q)$(asm) $(asflags) -c $^ -o $@
+
+# -------------------------------------------------------------
+
+board-objtree := $(objtree)/slave/boards/$(board-complete-prefix)
+
+$(board-objtree)/%.o: $(local)/boards/$(board-complete-prefix)/%.c
+	$(q)$(cc) $(cflags) -c $^ -o $@
+
+$(board-objtree)/%.o: $(local)/boards/$(board-complete-prefix)/%.S
+	$(q)$(asm) $(asflags) -c $^ -o $@
 
 
 # ==============================================================

@@ -7,7 +7,7 @@ soc-incdir  := $(soc-outdir)/include
 
 soc-outdir-targets := \
 	$(soc-outdir)/$(libsam).a \
-	$(soc-incdir)/libsam \
+	$(soc-incdir)/libsam/include \
 	$(soc-gcc-dir)
 
 startup = startup_sam3xa
@@ -31,14 +31,19 @@ soc-copy-targets: $(soc-outdir-targets)
 $(soc-outdir)/$(libsam).a: $(soc-outdir)/$(soc-lib-dir)
 	$(q)cp -f $</variants/arduino_due_x/$(libsam).a $@
 
-$(soc-incdir)/libsam: $(soc-outdir)/$(soc-lib-dir)
+$(soc-incdir)/libsam/include: $(soc-outdir)/$(soc-lib-dir)
 	$(q)mkdir -p $@
 	$(q)cp -f $</system/libsam/include/*.h $@
+	$(q)cp -f $</system/libsam/chip.h $@/..
+	$(q)cp -f $</system/CMSIS/Device/ATMEL/sam*.h $@/..
+	$(q)cp -rf $</system/CMSIS/Device/ATMEL/sam3xa $@/..
+
+$(soc-outdir)/$(soc-lib-dir)/sam3xa/include: $(soc-outdir)/$(soc-lib-dir)
 
 $(soc-gcc-dir): $(soc-outdir)/$(soc-lib-dir)
 	$(q)mkdir -p $@
 	$(q)cp -f $</variants/arduino_due_x/linker_scripts/gcc/*.ld $@
-	$(q)cp -f $</system/CMSIS/Device/ATMEL/sam3xa/source/$(startup).c $@
+	$(q)cp -f $</system/CMSIS/Device/ATMEL/sam3xa/source/gcc_atmel/$(startup).c $@
 
 $(soc-outdir)/$(soc-lib-dir):
 	$(q)mkdir -p $(soc-outdir)
@@ -58,8 +63,14 @@ objs += $(soc-complete-prefix)/$(startup).o
 libs += $(libsam:lib%=%)
 
 # Makefile.arch ещё че то может доабвить
-cflags += -I$(soc-incdir) -D__SAM3X8E__
-asflags += -I$(soc-incdir) -D__SAM3X8E__
+soc-f := \
+	-I$(soc-incdir) \
+	-D__SAM3X8E__ \
+	-I$(soc-outdir)/$(soc-lib-dir)/system/CMSIS/CMSIS/Include \
+	-I$(soc-outdir)/$(soc-lib-dir)/system/CMSIS/Device/ATMEL/sam3xa/include
+
+cflags += $(soc-f)
+asflags += $(soc-f)
 
 ldflags += \
 	-L$(soc-outdir) \
@@ -72,4 +83,10 @@ ldflags += -T $(soc-gcc-dir)/flash.ld
 endif
 
 
+# ============================================================
 
+startup-o := $(objtree)/$(prefix)/$(soc-complete-prefix)/$(startup).o
+startup-c := $(soc-outdir)/$(soc-lib-dir)/system/CMSIS/Device/ATMEL/sam3xa/source/gcc_atmel/$(startup).c
+
+$(startup-o): $(startup-c)
+	$(q)$(cc) -Wall $(cflags) -c $^ -o $@

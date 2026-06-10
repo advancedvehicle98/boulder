@@ -25,8 +25,13 @@
 # ===============================================================
 
 
-
 cflags += -I$(gentree) -I$(srctree)/include -Wall
+
+ifeq ($(CONFIG_DEBUG),y)
+	cflags += -g -O0
+else
+	cflags += $(patsubst "%",%,$(CONFIG_OPT_LEVEL))
+endif
 
 $(objtree)/$(prefix)/%.o: $(local-srctree)/%.c
 	$(q)$(cc) $(cflags) -c $^ -o $@
@@ -36,15 +41,6 @@ asflags += _D__ASSEMBLY__ -Wall
 $(objtree)/$(prefix)/%.o: $(local-srctree)/%.S
 	$(q)$(asm) $(asflags) -a $^ -o $@
 
-# дополнительно для тех файлов, которые лежат вне $(local-srctree)
-
-$(objtree)/$(prefix)/%.o: $(local)/%.c
-	$(q)$(cc) $(cflags) -c $^ -o $@
-
-asflags += _D__ASSEMBLY__ -Wall
-
-$(objtree)/$(prefix)/%.o: $(local)/%.S
-	$(q)$(asm) $(asflags) -a $^ -o $@
 
 # ==============================================================
 

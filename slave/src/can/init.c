@@ -1,5 +1,7 @@
 #include <slave/can.h>
 
+#include <stdbool.h>
+
 
 can_init_error_t
 slave_can_init( __STATE can_state_t *s )
@@ -9,7 +11,7 @@ slave_can_init( __STATE can_state_t *s )
 	// делаем специфичную для микроконтроллера настройку ---------------------------------
 	
 	{
-		can_soc_state_t *specifics = &( s->specifics );
+		can_soc_state_t *specifics = &( s->soc );
 		can_init_error_t init_state;
 
 		init_state = slave_soc_can_init( specifics );

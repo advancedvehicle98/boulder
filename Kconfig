@@ -4,12 +4,52 @@ mainmenu "Boulder configuration"
 # общие настройки
 menu "General settings"
 
+config DEBUG
+	   bool "Enable debug features"
+	   help
+		 Enables debug compilation options and macros
+		 default n
+
+choice OPT_LEVEL_CHOICE
+	   prompt "Optimization level"
+	   optional
+
+config OPT_O0
+	   bool "-O0"
+
+config OPT_O1
+	   bool "-O1"
+
+config OPT_O2
+	   bool "-O2"
+
+config OPT_O3
+	   bool "-O3"
+
+config OPT_Os
+	   bool "-Os"
+
+config OPT_Ofast
+	   bool "-Ofast"
+
+config OPT_Oz
+	   bool "-Oz"
+
+endchoice
+
+config OPT_LEVEL
+	   string
+	   default "-O0"    if OPT-O0
+	   default "-O1"    if OPT_O1
+	   default "-O2"    if OPT_O2
+	   default "-O3"    if OPT_O3
+	   default "-Os"    if OPT_Os
+	   default "-Ofast" if OPT_Ofast
+	   default "-Oz"    if OPT_Oz
+
 endmenu
 
 source "scripts/kconfig/Kconfig.can"
-
-
-
 
 source "master/Kconfig"
 source "slave/Kconfig"

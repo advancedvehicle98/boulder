@@ -11,11 +11,11 @@ slave_soc_can_init( __STATE can_soc_state_t *s )
 	// Настройка значений в соответствии с конфигом -------------
 	
 #ifdef CONFIG_SAM3X8E_USE_CAN1
-	const Can      *can    = CAN1;
-	const uint32_t  can_id = ID_CAN1;
+	Can * const    can    = CAN1;
+	const uint32_t can_id = ID_CAN1;
 #else
-	const Can      *can    = CAN0;
-	const uint32_t  can_id = ID_CAN0;
+	Can * const    can    = CAN0;
+	const uint32_t can_id = ID_CAN0;
 #endif
 
 	// Включаем тактирование для CAN-интерфейса -----------------

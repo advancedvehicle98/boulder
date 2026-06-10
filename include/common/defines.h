@@ -4,10 +4,11 @@
 
 #define __IN
 #define __OUT
-#define __IO
 #define __STATE
 
-#define __INLINE __attribute__(( always_inline )) inline
+#ifndef __INLINE
+#   define __INLINE __attribute__(( always_inline )) inline
+#endif
 
 #ifndef __COLD
 #   define __COLD  __attribute__(( cold ))

@@ -13,4 +13,15 @@ config SAM3X8E_USE_CAN1
 	   help
 		 Use CAN1 interface instead of CAN0
 
+choice SAM3X8E_MAIN_CLOCK_SOURCE
+	   prompt "Select main clock source clock"
+
+config SAM3X8E_USE_XTAL
+	   bool "Crystal oscillator (3-20 MHz)"
+
+config SAM3X8E_USE_FAST_RC
+	   bool "Embedded fast RC oscillator (12 MHz)"
+
+endchoice
+
 endmenu

@@ -2,7 +2,6 @@
 
 #include <slave/can.h>
 
-#include <libsam/can.h>
 #include <stdbool.h>
 
 
