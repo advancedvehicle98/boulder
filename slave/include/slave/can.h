@@ -7,6 +7,7 @@
 #include <soc/can.h>
 
 #include <canard.h>
+#include <dsdl/include/dronecan_msgs.h>
 
 
 typedef enum {
@@ -20,9 +21,13 @@ typedef struct _can_state_t {
 	
 	// вот эти штуки определяются в soc/<префикс soc>/include/can.h
 	can_soc_state_t soc;
-	
+
+	// canard
 	CanardInstance canard;
 	uint8_t canard_pool[ CONFIG_CANARD_SLAVE_POOL_SIZE ];
+
+	// dronecan
+	struct uavcan_protocol_NodeStatus node_status;
 	
 	bool ready;
 } can_state_t;

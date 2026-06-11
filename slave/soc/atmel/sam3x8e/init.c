@@ -14,6 +14,7 @@ static uint32_t _measure_main_clock( void );
 static void _periph_clock_init( void );
 static void _pio_init( void );
 static void _plla_init( void );
+static void _uart_init( void );
 
 
 // по сути, это то же самое, что и SystemInit из system_sam3xa.c
@@ -87,7 +88,8 @@ _periph_clock_init( void )
 	const uint32_t can_id = ID_CAN0;
 #endif
 	
-	pmc_enable_periph_clk( can_id );
+	pmc_enable_periph_clk(   can_id
+						   | ID_UART );
 }
 
 
@@ -116,5 +118,3 @@ _plla_init( void )
 
 	while ( ! ( PMC->PMC_SR & PMC_SR_LOCKA ) ) { }
 }
-
-

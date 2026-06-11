@@ -25,11 +25,15 @@ include $(scripts)/make/Makefile.canard
 
 # ==============================================================
 
+uart-prefix := uart
+uart-objs-y := init.o
+
 can-prefix := can
 can-objs-y := init.o on_receive.o should_accept_transfer.o
 
 objs += handle_exit.o init.o main.o run.o \
-	$(addprefix $(can-prefix)/, $(can-objs-y))
+	$(addprefix $(can-prefix)/, $(can-objs-y)) \
+	$(addprefix $(uart-prefix)/, $(uart-objs-y))
 
 # --------------------------------------------
 
@@ -98,11 +102,15 @@ include $(soctree)/Makefile.soc
 
 board-objs := init.o
 
+soc-uart-prefix := uart
+soc-uart-objs-y := init.o
+
 soc-can-prefix := can
-soc-can-obj-y  := init.o
+soc-can-objs-y := init.o
 
 soc-objs := init.o \
-	$(addprefix $(soc-can-prefix)/, $(soc-can-obj-y))
+	$(addprefix $(soc-can-prefix)/, $(soc-can-objs-y)) \
+	$(addprefix $(soc-uart-prefix)/, $(soc-uart-objs-y))
 
 objs += \
 	$(addprefix soc/$(soc-complete-prefix)/, $(soc-objs)) \

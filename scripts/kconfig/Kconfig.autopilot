@@ -1,0 +1,9 @@
+menu "Autopilot"
+
+config MANUAL_STEER_FLYSKY
+	   bool "(TBD) Enable manual control via Flysky/IBus"
+	   default y
+	   help
+	     (TBD) Enables manual control via Flysky remote controller on slave device. When it is enabled, the operator can override rover's autopilot by ceasing to accept motor control requests from master. However, the slave continues to broadcast telemetry messages, so that master can passively process navigation data
+
+endmenu

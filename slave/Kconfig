@@ -1,11 +1,31 @@
 menu "Slave configuration"
 
+
 source "slave/boards/Kconfig"
 source "slave/soc/Kconfig"
 source "slave/arch/Kconfig"
 
-config UART_DEBUG_MSGS
-	   bool "Enable UART debug messages"
+
+config SLAVE_SERIAL_DEBUG_MSGS
+	   bool "Enable serial debug messages"
 	   default n
+
+
+choice SLAVE_SERIAL_BAUD_CHOICE
+	   prompt "Serial communication baud"
+
+config SLAVE_SERIAL_BAUD_9600
+	   bool "9600"
+
+config SLAVE_SERIAL_BAUD_115200
+	   bool "115200"
+	   
+endchoice # SERIAL_BAUD_CHOICE
+
+config SLAVE_SERIAL_BAUD
+	   int
+	   default 9600   if SLAVE_SERIAL_BAUD_9600
+	   default 115200 if SLAVE_SERIAL_BAUD_115200
+
 
 endmenu

@@ -3,6 +3,7 @@
 
 
 #include <slave/can.h>
+#include <slave/uart.h>
 
 #include <soc/state.h>
 
@@ -16,13 +17,15 @@ typedef enum {
 
 typedef enum {
 	SLAVE_INIT_SUCCESS,
-	SLAVE_INIT_FAILED_CAN_INIT
+	SLAVE_INIT_FAILED_CAN_INIT,
+	SLAVE_INIT_FAILED_UART_INIT
 } boulder_init_error_t;
 
 
 typedef struct _boulder_slave_state_t {
-	soc_state_t soc;
-	can_state_t can;
+	soc_state_t  soc;
+	can_state_t  can;
+	uart_state_t uart;
 } boulder_slave_state_t;
 
 

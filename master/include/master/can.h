@@ -6,6 +6,7 @@
 #include <common/defines.h>
 
 #include <canard.h>
+#include <dsdl/include/dronecan_msgs.h>
 #include <net/if.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -36,15 +37,20 @@ typedef enum {
 
 typedef struct _can_state_t {
 	uint32_t bitrate;
-	
+
+	// socketcan
 	char     if_name[ MASTER_CAN_IF_NAME_LEN ];
 	uint32_t if_index;
 	int32_t  socket_fd;
 
+	// canard
 	CanardInstance canard;
 	uint8_t canard_pool[ CONFIG_CANARD_MASTER_POOL_SIZE ];
+
+	// dronecan
+	struct uavcan_protocol_NodeStatus node_status;
 	
-	bool     ready;
+	bool ready;
 } can_state_t;
 
 

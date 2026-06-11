@@ -32,7 +32,7 @@ slave_soc_can_init( __STATE can_soc_state_t *s )
 	// инициализируем интерфейс ---------------------------------
 
 	// значения битрейта соответствуют макросам CAN_BPS_* из libsam
-	uint32_t init_status = can_init( can, CHIP_FREQ_CPU_MAX, CONFIG_CAN_BITRATE_KHZ );
+	uint32_t init_status = can_init( can, CHIP_FREQ_CPU_MAX, CONFIG_CAN_BITRATE_KBPS );
 
 	if ( ! init_status ) return CAN_INIT_TIMEOUT;
 	
@@ -54,7 +54,7 @@ slave_soc_can_init( __STATE can_soc_state_t *s )
 
 
 void
-_enable_interrupt( void )
+_enable_interrupt()
 {
 #ifdef CONFIG_SAM3X8E_USE_CAN1
 	const uint32_t irq = CAN1_IRQn;
@@ -70,7 +70,7 @@ _enable_interrupt( void )
 	// and can send callbacks into user code which could also be long and complicated.
 	// But, keep in mind that user code in callbacks runs in interrupt context
 	// but can still be preempted at any time.
-	
+
 	NVIC_SetPriority( irq, 12 );
 	NVIC_EnableIRQ( irq );
 }

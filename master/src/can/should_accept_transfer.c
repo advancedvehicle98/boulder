@@ -10,8 +10,6 @@ master_can_should_accept_transfer( __IN const CanardInstance     *canard,
 								   __IN       CanardTransferType  trx_type,
 								   __IN       uint8_t             src_id )
 {
-	can_state_t *can = canardGetUserReference( canard );
-
 	if ( trx_type == CanardTransferTypeRequest )
 		switch ( data_type_id ) {
 			

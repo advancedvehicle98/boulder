@@ -21,7 +21,7 @@ config COVERAGE
 	   depends on DEBUG
 	   default n
 	   help
-		 Produce .gcno files for creating coverage reports
+		 Produce .gcno files which can be used to create coverage reports
 
 
 choice OPT_LEVEL_CHOICE
@@ -63,7 +63,9 @@ config OPT_LEVEL
 
 endmenu
 
-source "scripts/kconfig/Kconfig.can"
 
 source "master/Kconfig"
 source "slave/Kconfig"
+
+source "scripts/kconfig/Kconfig.can"
+source "scripts/kconfig/Kconfig.autopilot"

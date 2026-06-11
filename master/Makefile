@@ -23,14 +23,18 @@ include $(scripts)/make/Makefile.canard
 
 # ==============================================================
 
-net-prefix := net
-net-objs-y := \
+net-prefix = net
+net-objs-y = \
 	open_netlink_socket.o \
 	try_set_linkinfo.o
 
-can-prefix := can
-can-objs-y := data.o deinit.o init.o on_receive.o \
-	set_bitrate.o should_accept_transfer.o
+can-dronecan-prefix = dronecan
+can-dronecan-objs-y = handle_get_node_info.o
+
+can-prefix = can
+can-objs-y = data.o deinit.o init.o on_receive.o \
+	set_bitrate.o should_accept_transfer.o \
+	$(addprefix $(can-dronecan-prefix)/, $(can-dronecan-objs-y))
 
 objs += \
 	deinit.o init.o main.o parse_args.o run.o \

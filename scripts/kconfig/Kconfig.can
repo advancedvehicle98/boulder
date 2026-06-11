@@ -7,23 +7,23 @@ source "scripts/kconfig/Kconfig.canard"
 choice CAN_BITRATE_CHOICE
 	   prompt "CAN bitrate"
 
-config CAN_BITRATE_5KHZ
+config CAN_BITRATE_5KBPS
 	   bool "5 KHz"
-config CAN_BITRATE_10KHZ
+config CAN_BITRATE_10KBPS
 	   bool "10 KHz"
-config CAN_BITRATE_25KHZ
+config CAN_BITRATE_25KBPS
 	   bool "25 KHz"
-config CAN_BITRATE_50KHZ
+config CAN_BITRATE_50KBPS
 	   bool "50 KHz"
-config CAN_BITRATE_125KHZ
+config CAN_BITRATE_125KBPS
 	   bool "125 KHz"
-config CAN_BITRATE_250KHZ
+config CAN_BITRATE_250KBPS
 	   bool "250 KHz"
-config CAN_BITRATE_500KHZ
+config CAN_BITRATE_500KBPS
 	   bool "500 KHz"
-config CAN_BITRATE_800KHZ
+config CAN_BITRATE_800KBPS
 	   bool "800 KHz"	   
-config CAN_BITRATE_1000KHZ
+config CAN_BITRATE_1000KBPS
 	   bool "1000 KHz"
 
 endchoice
@@ -31,16 +31,16 @@ endchoice
 
 # невидимые параметры ===========================================
 
-config CAN_BITRATE_KHZ
+config CAN_BITRATE_KBPS
 	   int
-	   default 5    if CAN_BITRATE_5KHZ
-	   default 10   if CAN_BITRATE_10KHZ
-	   default 25   if CAN_BITRATE_25KHZ
-	   default 50   if CAN_BITRATE_50KHZ
-	   default 125  if CAN_BITRATE_125KHZ
-	   default 250  if CAN_BITRATE_250KHZ
-	   default 500  if CAN_BITRATE_500KHZ
-	   default 800  if CAN_BITRATE_800KHZ
-	   default 1000 if CAN_BITRATE_1000KHZ
+	   default 5    if CAN_BITRATE_5KBPS
+	   default 10   if CAN_BITRATE_10KBPS
+	   default 25   if CAN_BITRATE_25KBPS
+	   default 50   if CAN_BITRATE_50KBPS
+	   default 125  if CAN_BITRATE_125KBPS
+	   default 250  if CAN_BITRATE_250KBPS
+	   default 500  if CAN_BITRATE_500KBPS
+	   default 800  if CAN_BITRATE_800KBPS
+	   default 1000 if CAN_BITRATE_1000KBPS
 
 endmenu
