@@ -12,6 +12,7 @@
 
 typedef enum {
 	SLAVE_RUN_CONTINUE,
+	SLAVE_RUN_SHUTDOWN_REQUEST_FROM_MASTER
 } boulder_run_status_t;
 
 
@@ -27,6 +28,10 @@ typedef struct _boulder_slave_state_t {
 	can_state_t  can;
 	uart_state_t uart;
 } boulder_slave_state_t;
+
+
+// это для обработчиков. значение копируется из переменной в main
+extern boulder_slave_state_t *boulder;
 
 
 // init.c

@@ -25,14 +25,24 @@ include $(scripts)/make/Makefile.canard
 
 # ==============================================================
 
-uart-prefix := uart
-uart-objs-y := init.o
+# желательно префиксы расписывать в алфавитном пордке
 
 can-prefix := can
 can-objs-y := init.o on_receive.o should_accept_transfer.o
 
+queue-prefix := queue
+queue-objs-y := init.o pop.o push.o
+
+ram-prefix := ram
+ram-objs-y := copy.o
+
+uart-prefix := uart
+uart-objs-y := init.o
+
 objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y)) \
+	$(addprefix $(queue-prefix)/, $(queue-objs-y)) \
+	$(addprefix $(ram-prefix)/, $(ram-objs-y)) \
 	$(addprefix $(uart-prefix)/, $(uart-objs-y))
 
 # --------------------------------------------
@@ -100,15 +110,19 @@ archtree  := $(local)/arch/$(arch-complete-prefix)
 
 include $(soctree)/Makefile.soc
 
-board-objs := init.o
+# здесь и далее в подобных переменных строго плюс-равно т.к
+# из Makefile.soc могут быть добавлены специфичные для
+# платформы файлы
+
+board-objs += init.o
 
 soc-uart-prefix := uart
-soc-uart-objs-y := init.o
+soc-uart-objs-y += init.o
 
 soc-can-prefix := can
-soc-can-objs-y := init.o
+soc-can-objs-y += init.o
 
-soc-objs := init.o \
+soc-objs += init.o \
 	$(addprefix $(soc-can-prefix)/, $(soc-can-objs-y)) \
 	$(addprefix $(soc-uart-prefix)/, $(soc-uart-objs-y))
 

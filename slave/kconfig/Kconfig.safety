@@ -1,0 +1,22 @@
+menu "Safety"
+
+config SAFETY_REDUNDANT_NULL_CHECKING
+	   bool "Redundant 0/NULL check"
+	   depends on ! SAFETY_COMPROMISE
+	   default n
+	   help
+	     Enables code, that checks for zero sizes and null pointers
+		 whenever possible (which is mostly useless if the API is
+		 properly tested)
+
+config SAFETY_COMPROMISE
+	   bool "Compromise on non critical things"
+	   default y
+	   help
+		 Disables verious checks. This assumes the developer is not
+		 an imbecile and uses given API as intended while knowing what
+		 he's doing. Actually, it disables unnecessary checks which will
+		 most likely just slightly spoil the performance but not be useful
+		 for anything else whatsoever
+
+endmenu 

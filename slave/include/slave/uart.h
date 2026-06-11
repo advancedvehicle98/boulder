@@ -2,8 +2,12 @@
 #define __BOULDER_SLAVE_UART_H
 
 
+#include <common/config.h>
 #include <common/defines.h>
+#include <slave/queue.h>
 #include <soc/uart.h>
+
+#include <stdint.h>
 
 
 typedef enum {
@@ -14,6 +18,9 @@ typedef enum {
 typedef struct _uart_state_t {
 	// см. soc/<soc>/include/soc/uart.h
 	uart_soc_state_t soc;
+
+	buffer_queue_t serial_queue;
+	uint8_t serial_queue_buffer[ CONFIG_SLAVE_SERIAL_QUEUE_LEN ];
 } uart_state_t;
 
 

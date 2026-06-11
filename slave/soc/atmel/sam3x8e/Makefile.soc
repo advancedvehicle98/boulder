@@ -69,8 +69,10 @@ include $(archtree)/Makefile.arch
 # ============================================================
 
 # че на выходе получается
+soc-uart-objs-y += irq_handler.o
 
 objs += $(soc-complete-prefix)/$(startup).o
+
 libs += $(libsam:lib%=%)
 
 # Makefile.arch ещё че то может доабвить

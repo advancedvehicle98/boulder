@@ -5,6 +5,10 @@ source "slave/boards/Kconfig"
 source "slave/soc/Kconfig"
 source "slave/arch/Kconfig"
 
+source "slave/kconfig/Kconfig.safety"
+
+
+menu "Serial communication"
 
 config SLAVE_SERIAL_DEBUG_MSGS
 	   bool "Enable serial debug messages"
@@ -26,6 +30,13 @@ config SLAVE_SERIAL_BAUD
 	   int
 	   default 9600   if SLAVE_SERIAL_BAUD_9600
 	   default 115200 if SLAVE_SERIAL_BAUD_115200
+
+
+config SLAVE_SERIAL_QUEUE_LEN
+	   int     "Message queue length (bytes)"
+	   default 128
+
+endmenu # Serial communication
 
 
 endmenu

@@ -5,8 +5,8 @@
 
 // этот uart надо инициализировать в обязательную очередь
 // добавление остальных зависит от настроек
-static __COLD uart_init_error_t _serial_uart_init( __STATE _uart_instance_t * const inst,
-												   __IN    const uint32_t           mclk );
+static __INLINE __COLD uart_init_error_t _serial_uart_init( __STATE _uart_instance_t * const inst,
+															__IN    const uint32_t           mclk );
 
 
 uart_init_error_t
