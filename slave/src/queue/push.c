@@ -49,25 +49,23 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 		if ( new_tail > head ) {
 			status = true;
 			
-			if ( overwrite ) {
-				is_full = BUFFER_QUEUE_IS_FULL;
+			if ( ! overwrite )
+				return true;
+			
+			is_full = BUFFER_QUEUE_IS_FULL;
 
-				// спец. случай, если у нас данных так много, 
-				// что они перезаписывают очередь на несколько раз.
-				// в таком случае при активной перезаписи просто
-				// добавляем последний кусок из data, который заполнит
-				// всю очередь
-				if ( new_tail > end ) {
-					new_tail = tail;
-					src += size - ( end - start );
-					after_start = tail - start;
-				}
-				
-				head = new_tail;
+			// спец. случай, если у нас данных так много, 
+			// что они перезаписывают очередь на несколько раз.
+			// в таком случае при активной перезаписи просто
+			// добавляем последний кусок из data, который заполнит
+			// всю очередь
+			if ( new_tail > end ) {
+				new_tail = tail;
+				src += size - ( end - start );
+				after_start = tail - start;
 			}
-			else
-				// если перезаписи нет, то ничего не делаем
-				return status;
+				
+			head = new_tail;
 		}
 	}
 
@@ -80,8 +78,10 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 	// находящемся перед head
 	
 	else if ( tail < head && head < new_tail ) {
-		head = new_tail;
+		if ( ! overwrite ) return true;
+		
 		status = true;
+		head = new_tail;
 	}
 
 	// копируем данные в очередь --------------------------------
@@ -139,16 +139,16 @@ slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,
 		if ( new_tail == head ) {
 			status = true;
 		
-			if ( overwrite ) {
+			if ( overwrite )
 				is_full = BUFFER_QUEUE_IS_FULL;
-				++head;
-			}
 			else
 				return status;
 		}
 	}
 	else if ( new_tail == head ) is_full = BUFFER_QUEUE_IS_FULL;
-
+	// бошку тоже сдвигаем, когда у нас переполнение
+	else if ( is_full ) head = new_tail;
+	
 	*( (uint8_t *) tail ) = data;
 
 	tail = new_tail;

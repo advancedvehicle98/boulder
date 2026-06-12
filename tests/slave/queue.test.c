@@ -5,6 +5,8 @@
 #include <stdio.h>
 
 
+static void test_byte_fifo( void **state );
+static void test_byte_lifo( void **state );
 static void test_push_no_overwrite( void **state );
 static void test_push_overwrite( void **state );
 static void test_pop_fifo( void **state );
@@ -26,12 +28,105 @@ main( void )
 		cmocka_unit_test( test_push_overwrite ),
 		cmocka_unit_test( test_pop_fifo ),
 		cmocka_unit_test( test_pop_lifo ),
+		cmocka_unit_test( test_byte_fifo ),
+		cmocka_unit_test( test_byte_lifo )
 	};
 	
 	return cmocka_run_group_tests( tests, NULL, NULL );
 }
 
 
+void
+test_byte_fifo( void **state )
+{
+	(void) state;
+	
+	uint8_t buf[ 8 ];
+	buffer_queue_t q;
+
+	slave_buffer_queue_init( &q, buf, sizeof( buf ), BUFFER_QUEUE_OVERWRITE );
+
+	// перезаполенение -------------------------------------
+	
+	bool status = false;
+	uint8_t verify_push[] = { 8, 9, 2, 3, 4, 5, 6, 7 };
+
+	for ( uint8_t x = 0; x < 10; ++x )
+		status |= slave_buffer_queue_push_byte( &q, x );
+
+	assert_true( status );
+	assert_true( slave_buffer_queue_is_full( &q ) );
+	
+	assert_memory_equal( verify_push, buf, sizeof( verify_push ) );
+	assert_ptr_equal( q.tail, &buf[ 2 ] );
+	assert_ptr_equal( q.head, q.tail );
+
+	// извлечение -----------------------------------
+
+	uint8_t popped;
+	
+	for ( int i = 0; i < 6; ++i ) {
+		popped = slave_buffer_queue_pop_byte( &q );
+		assert_uint_equal( verify_push[ i + 2 ], popped );
+	}
+
+	uint8_t verify_pop[ 2 ] = { 8, 9 };
+	
+	assert_memory_equal( verify_pop, q.head, sizeof( verify_pop ) );
+
+	assert_uint_equal( 8, slave_buffer_queue_pop_byte( &q ) );
+	assert_uint_equal( 9, slave_buffer_queue_pop_byte( &q ) );
+
+	assert_true( slave_buffer_queue_is_empty( &q ) );
+}
+
+
+void
+test_byte_lifo( void **state )
+{
+	(void) state;
+	
+	uint8_t buf[ 8 ];
+	buffer_queue_t q;
+
+	slave_buffer_queue_init( &q, buf, sizeof( buf ),
+							 BUFFER_QUEUE_OVERWRITE | BUFFER_QUEUE_LIFO );
+
+	// перезаполенение -------------------------------------
+	// (ассерты были в fifo)
+	
+	uint8_t verify_push[] = { 8, 9, 2, 3, 4, 5, 6, 7 };
+
+	for ( uint8_t x = 0; x < 10; ++x )
+		slave_buffer_queue_push_byte( &q, x );
+
+	// извлечение -----------------------------------
+
+	uint8_t popped;
+	
+	for ( int i = 1; i >= 0; --i ) {
+		popped = slave_buffer_queue_pop_byte( &q );
+		assert_uint_equal( verify_push[ i ], popped );
+	}
+	
+	for ( int i = 7; i >= 6; --i ) {
+		popped = slave_buffer_queue_pop_byte( &q );
+		assert_uint_equal( verify_push[ i ], popped );
+	}
+
+	uint8_t verify_pop[ 4 ] = { 2, 3, 4, 5 };
+	
+	assert_memory_equal( verify_pop, q.head, sizeof( verify_pop ) );
+	
+	assert_uint_equal( 5, slave_buffer_queue_pop_byte( &q ) );
+	assert_uint_equal( 4, slave_buffer_queue_pop_byte( &q ) );
+	assert_uint_equal( 3, slave_buffer_queue_pop_byte( &q ) );
+	assert_uint_equal( 2, slave_buffer_queue_pop_byte( &q ) );
+
+	assert_true( slave_buffer_queue_is_empty( &q ) );		
+}
+
+	
 void
 test_pop_fifo( void **state )
 {
@@ -122,7 +217,87 @@ test_pop_fifo( void **state )
 void
 test_pop_lifo( void **state )
 {
+	(void) state;
+
+	buffer_queue_t q;
+	uint8_t buf[ 64 ];
+	size_t size;
+
+	slave_buffer_queue_init( &q, buf, sizeof( buf ),
+							 BUFFER_QUEUE_OVERWRITE | BUFFER_QUEUE_LIFO );
+
+	// проверка на одном элементе --------------------------------
+
+	uint32_t x = 0x04030201;
+	uint32_t y;
+
+	slave_buffer_queue_push( &q, &x, sizeof( x ) );
+	size = slave_buffer_queue_pop( &q, &y, sizeof( y ) );
 	
+	assert_ptr_equal( q.head, q.tail );
+	assert_ptr_equal( q.tail, buf );
+	
+	assert_uint_equal( x, y );
+	assert_uint_equal( q.flags & BUFFER_QUEUE_IS_EMPTY, BUFFER_QUEUE_IS_EMPTY );
+	assert_uint_equal( size, sizeof( y ) );
+
+	// заполнение очереди хернёй -------------------------------------
+
+	for ( int i = 0; i < sizeof( buf ); i += 4, x += 0x04040404 )
+		slave_buffer_queue_push( &q, &x, sizeof( x ) );
+
+	assert_uint_equal( q.flags & BUFFER_QUEUE_IS_FULL, BUFFER_QUEUE_IS_FULL );
+	
+	// вытаскиваем крайний элемент -----------------------------------
+
+	size = slave_buffer_queue_pop( &q, &y, sizeof( y ) );
+
+	assert_ptr_equal( q.tail, q.end - sizeof( uint32_t ) );
+
+	assert_uint_equal( size, sizeof( y ) );
+	assert_uint_equal( 0x04030201 + 0x04040404*15, y );
+	assert_uint_equal( q.flags & BUFFER_QUEUE_IS_EMPTY, 0 );
+
+	// с перезаполнением ----------------------------------------------
+
+	uint32_t z[] = { 0xFFFFFFFF, 0xEEEEEEEE };
+
+	bool status = slave_buffer_queue_push( &q, z, sizeof( z ) );
+
+	// на всякий
+	assert_true( status );
+	
+	assert_ptr_equal( q.head, buf + sizeof( y ) );
+	assert_ptr_equal( q.head, q.tail );
+	
+	size = slave_buffer_queue_pop( &q, &y, sizeof( y ) );
+
+	assert_ptr_equal( q.tail, buf );
+	
+	assert_uint_equal( size, sizeof( y ) );
+	assert_uint_equal( z[ 1 ], y );
+	assert_uint_equal( q.flags & BUFFER_QUEUE_IS_EMPTY, 0 );
+	
+	// пускаем очередь по кругу -------==========================
+
+	uint8_t w[ 64 - 3*sizeof( uint32_t ) ];
+
+	size = slave_buffer_queue_pop( &q, w, sizeof( w ) );
+
+	assert_uint_equal( size, sizeof( w ) );
+	
+	assert_ptr_equal( q.tail, q.start + 3*sizeof( uint32_t ) );
+
+	// вытаскиваем всё остальное ---------------------------------------
+
+	uint8_t v[ 64 - sizeof( w ) ];
+
+	size = slave_buffer_queue_pop( &q, v, sizeof( v ) );
+
+	assert_uint_equal( size, sizeof( v ) - 0x04 );
+	assert_uint_equal( q.flags & BUFFER_QUEUE_IS_EMPTY, BUFFER_QUEUE_IS_EMPTY );
+	
+	assert_ptr_equal( q.tail, q.head );
 }
 
 
@@ -199,8 +374,8 @@ test_push_overwrite( void **state )
 	
 	bool status = slave_buffer_queue_push( &q, &b, sizeof( b ) );
 	
-	assert_memory_equal( b,                    buf + sizeof( a ), sizeof( b[ 0 ] ) );
-	assert_memory_equal( b + sizeof( b[ 0 ] ), buf,               sizeof( b[ 1 ] ) );
+	assert_memory_equal( b, buf + sizeof( a ), sizeof( b[ 0 ] ) );
+	assert_memory_equal( b + sizeof( b[ 0 ] ), buf, sizeof( b[ 1 ] ) );
 	
 	assert_true( status );
 

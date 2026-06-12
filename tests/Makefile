@@ -88,6 +88,9 @@ build-slave-for-tests:
 $(slave-complete-prefix):
 	$(q)mkdir -p $@
 
+# to-do: как-то убрать intermediate, чтобы makefile не удалял
+# автоматом полученные файлы
+
 .INTERMEDIATE: $(addprefix execute/, $(slave-tests))
 execute/%: $(slave-complete-prefix)/%
 	$(q)LD_PRELOAD=$(cmocka-lib) $<

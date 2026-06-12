@@ -26,6 +26,20 @@ typedef struct _buffer_queue_t {
 } buffer_queue_t;
 
 
+static bool
+slave_buffer_queue_is_empty( __IN buffer_queue_t * const queue )
+{
+	return !!( queue->flags & BUFFER_QUEUE_IS_EMPTY );
+}
+
+
+static bool
+slave_buffer_queue_is_full( __IN buffer_queue_t * const queue )
+{
+	return !!( queue->flags & BUFFER_QUEUE_IS_FULL );
+}
+
+
 // src/queue/init.c
 void slave_buffer_queue_init( __STATE buffer_queue_t *queue,
 							  __IN    void           *buffer,

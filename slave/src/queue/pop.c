@@ -82,7 +82,7 @@ _slave_buffer_queue_pop_lifo:
 		slave_ram_copy_reverse( data+after_start, end-before_end, before_end  );
 	}
 	else
-		slave_ram_copy_reverse( data, tail, popped_size );
+		slave_ram_copy_reverse( data, new_tail, popped_size );
 
 	queue->tail = new_tail;
 
@@ -103,7 +103,7 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 	if ( ! data || ! size ) return false;
 #endif
 	
-	uint8_t lifo = queue->flags & BUFFER_QUEUE_OVERWRITE;
+	uint8_t lifo = queue->flags & BUFFER_QUEUE_LIFO;
 
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
@@ -123,6 +123,7 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 		void *new_head = head + 1;
 
 		if ( new_head == end ) new_head = start;
+		
 		if ( new_head == tail ) is_empty = BUFFER_QUEUE_IS_EMPTY;
 
 		popped_byte = *( (uint8_t *) head );		
@@ -134,10 +135,11 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 	else {
 		void *new_tail = tail - 1;
 
-		if ( new_tail < start ) new_tail = end - 1;		
+		if ( new_tail < start ) new_tail = end - 1;
+		
 		if ( new_tail == head ) is_empty = BUFFER_QUEUE_IS_EMPTY;
 	
-		popped_byte = *( (uint8_t *) tail );	
+		popped_byte = *( (uint8_t *) new_tail );	
 		queue->tail = new_tail;
 	}
 	
