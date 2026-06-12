@@ -15,11 +15,12 @@ export VERBOSE q
 
 this-makefile := $(lastword $(MAKEFILE_LIST))
 
-export srctree := $(abspath $(dir $(this-makefile)))
-export objtree := $(shell mkdir -p $(srctree)/out && cd $(srctree)/out && pwd)
-export gentree := $(shell mkdir -p $(srctree)/generated && cd $(srctree)/generated && pwd)
-export modtree := $(srctree)/modules
-export scripts := $(srctree)/scripts
+export srctree  := $(abspath $(dir $(this-makefile)))
+export objtree  := $(shell mkdir -p $(srctree)/out && cd $(srctree)/out && pwd)
+export gentree  := $(shell mkdir -p $(srctree)/generated && cd $(srctree)/generated && pwd)
+export modtree  := $(srctree)/modules
+export scripts  := $(srctree)/scripts
+export testtree := $(srctree)/tests
 
 export VPATH   := $(srctree)
 

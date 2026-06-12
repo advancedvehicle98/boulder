@@ -89,7 +89,6 @@ _slave_buffer_queue_pop_lifo:
 	// обновление очереди ----------------------------------------------
 
 _slave_buffer_queue_pop_update:
-
 	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
 	queue->flags |= is_empty | is_full;
 
@@ -100,7 +99,7 @@ _slave_buffer_queue_pop_update:
 uint8_t
 slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 {
-	#ifdef SAFETY_REDUNDANT_NULL_CHECKING
+#ifdef SAFETY_REDUNDANT_NULL_CHECKING
 	if ( ! data || ! size ) return false;
 #endif
 	
@@ -124,26 +123,21 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 		void *new_head = head + 1;
 
 		if ( new_head == end ) new_head = start;
-
 		if ( new_head == tail ) is_empty = BUFFER_QUEUE_IS_EMPTY;
 
-		popped_byte = *( (uint8_t *) head );
-		
+		popped_byte = *( (uint8_t *) head );		
 		queue->head = new_head;
 	}
 	
 	// lifo -----------------------------------------------------------
 	
 	else {
-		
 		void *new_tail = tail - 1;
 
-		if ( new_tail < start ) new_tail = end - 1;
-		
+		if ( new_tail < start ) new_tail = end - 1;		
 		if ( new_tail == head ) is_empty = BUFFER_QUEUE_IS_EMPTY;
 	
-		popped_byte = *( (uint8_t *) tail );
-	
+		popped_byte = *( (uint8_t *) tail );	
 		queue->tail = new_tail;
 	}
 	

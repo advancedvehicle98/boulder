@@ -1,5 +1,4 @@
 # какие переменные должны быть определены заранее перед включением этого куска:
-# - local:         каталог, где лежит текущий makefile (относительно $(srctree))
 # - local-srctree: каталог, в котором лежат все исходники, и относительно которого лежат
 #                  префиксные каталоги, в которых тоже есть исходники
 # - cflags*:       флаги компилятора
@@ -67,7 +66,7 @@ $(target): $(addprefix $(objtree)/$(prefix)/, $(objs))
 
 _objtree-prefixes := $(addprefix $(prefix)/, $(sort $(dir $(objs))))
 
-phony += $(objtree-prefixes)
+phony += objtree-prefixes
 objtree-prefixes: $(_objtree-prefixes)
 
 $(_objtree-prefixes): force
