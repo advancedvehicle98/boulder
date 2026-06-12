@@ -13,7 +13,7 @@ slave_buffer_queue_pop( __STATE buffer_queue_t *queue,
 	if ( ! data || ! size ) return false;
 #endif
 	
-	uint8_t lifo = queue->flags & BUFFER_QUEUE_OVERWRITE;
+	uint8_t lifo = queue->flags & BUFFER_QUEUE_LIFO;
 
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
@@ -45,7 +45,7 @@ slave_buffer_queue_pop( __STATE buffer_queue_t *queue,
 	
 	void *new_head = head + popped_size;
 
-	if ( new_head > end ) {
+	if ( new_head >= end ) {
 		before_end  = end - head;
 		after_start = popped_size - before_end;
 		new_head = start + after_start;

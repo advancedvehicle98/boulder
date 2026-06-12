@@ -48,9 +48,8 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 		// переполнение
 		if ( new_tail > head ) {
 			status = true;
-		
+			
 			if ( overwrite ) {
-				head = new_tail;
 				is_full = BUFFER_QUEUE_IS_FULL;
 
 				// спец. случай, если у нас данных так много, 
@@ -59,9 +58,12 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 				// добавляем последний кусок из data, который заполнит
 				// всю очередь
 				if ( new_tail > end ) {
+					new_tail = tail;
 					src += size - ( end - start );
-					after_start = end - start - before_end;
+					after_start = tail - start;
 				}
+				
+				head = new_tail;
 			}
 			else
 				// если перезаписи нет, то ничего не делаем
@@ -69,8 +71,18 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 		}
 	}
 
-	// кто поставит сюда else тому место в аду
-	if ( new_tail == head ) is_full = BUFFER_QUEUE_IS_FULL;
+	// когда мы дошли до конца очереди ----------------------------------
+	
+	if ( new_tail == head ) 
+		is_full = BUFFER_QUEUE_IS_FULL;
+	
+	// учитываем случай, когда перезаполение происходит при tail, ----------
+	// находящемся перед head
+	
+	else if ( tail < head && head < new_tail ) {
+		head = new_tail;
+		status = true;
+	}
 
 	// копируем данные в очередь --------------------------------
 	
