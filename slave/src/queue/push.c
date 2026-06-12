@@ -19,8 +19,10 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
-	
+
+#ifndef SAFETY_COMPROMISE
 	if ( is_full && ! overwrite ) return true;
+#endif
 	
 	if ( is_empty ) is_empty = 0;
 
@@ -29,13 +31,8 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 
 	void *new_tail = tail + size;
 	
-	size_t before_end = 0;     // сколько заполняется с конца, если идем по кругу
-	size_t after_start = 0; // сколько заполняется с начала, если идем по кругу
-
-	// это нужно для того, чтобы поменять указатель на данные в том случае,
-	// если у нас данные могут переполнить очередь на несколько раз.
-	// в таком случае мы смещаем указатель на данных на то место,
-	// начиная с которого все данные влезут в очередь
+	size_t before_end = 0;
+	size_t after_start = 0;
 	void *src = data;
 	
     // идём по кругу -------------------------------------------------
@@ -121,8 +118,10 @@ slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,
 
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
-	
+
+#ifndef SAFETY_COMPROMISE
 	if ( is_full && ! overwrite ) return true;
+#endif
 	
 	if ( is_empty ) is_empty = 0;
 

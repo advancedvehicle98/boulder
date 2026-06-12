@@ -1,3 +1,4 @@
+#include <slave/queue.h>
 #include <slave/state.h>
 #include <soc/uart.h>
 
@@ -28,13 +29,17 @@ _uart_irq_handler( _uart_instance_t * const inst )
 
 	// если что-то получили ----------------------------------
 	
-	if ( soc_uart_is_data_received( status ) );
-	// tbd
+	if ( soc_uart_is_data_received( status ) )
+		slave_fast_queue_push_byte( &( uart->serial_rx_queue ),
+									  iface->UART_RHR );
 
 	// если что-то нужно ещё отправить ------------------------
 	
-	if ( soc_uart_is_sending_data( status ) );
-	// tbd
+	if ( soc_uart_is_sending_data( status ) )
+		if ( ! slave_fast_queue_is_empty( &( uart->serial_tx_queue ) ) )
+			iface->UART_THR = slave_fast_queue_pop_byte( &( uart->serial_tx_queue ) );
+		else
+			iface->UART_IDR = UART_IDR_TXRDY;
 
 	// обработка ошибок --------------------------------------
 	

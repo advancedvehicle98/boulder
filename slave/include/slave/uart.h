@@ -19,8 +19,10 @@ typedef struct _uart_state_t {
 	// см. soc/<soc>/include/soc/uart.h
 	uart_soc_state_t soc;
 
-	buffer_queue_t serial_queue;
-	uint8_t serial_queue_buffer[ CONFIG_SLAVE_SERIAL_QUEUE_LEN ];
+	fast_queue_t serial_rx_queue;
+	uint8_t serial_rx_queue_buffer[ CONFIG_SLAVE_SERIAL_RX_QUEUE_LEN ];
+	fast_queue_t serial_tx_queue;
+	uint8_t serial_tx_queue_buffer[ CONFIG_SLAVE_SERIAL_TX_QUEUE_LEN ];
 } uart_state_t;
 
 

@@ -22,7 +22,8 @@ can-prefix := can
 can-objs-y := init.o on_receive.o should_accept_transfer.o
 
 queue-prefix := queue
-queue-objs-y := init.o pop.o push.o
+queue-objs-y := init.o pop.o push.o \
+	fast_init.o fast_pop.o fast_push.o
 
 ram-prefix := ram
 ram-objs-y := copy.o
