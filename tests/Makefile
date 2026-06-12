@@ -5,10 +5,10 @@ tests-prefix := tests
 # ------------------------------------------------------------------
 
 # -------------------------
-slave-queue-objs := pop.o init.o push.o
+slave-queue-objs := queue/pop.o queue/init.o queue/push.o ram/copy.o
 
-slave-queue-srctree := $(srctree)/slave/src/queue
-slave-queue-objtree := $(objtree)/$(tests-prefix)/slave/queue
+slave-queue-srctree := $(srctree)/slave/src
+slave-queue-objtree := $(objtree)/$(tests-prefix)/slave
 # -------------------------
 
 slave-tests-prefix := slave
@@ -32,35 +32,71 @@ all: slave master
 
 # =============================================
 
+cflags += -I$(cmocka-include) \
+	-I$(gentree) -I$(srctree)/include \
+	$(patsubst "%",%,$(CONFIG_OPT_LEVEL))
+
+ldflags += -L$(cmocka-libdir)
+
+libs += cmocka
+
+# нам спецом нужно пересобирать некоторые файлы из прошивок,
+# чтобы потом можно было их слинковать с тестами.
+# для этого для master и slave есть переменная build-for-tests,
+# который при y собирает только необходимые для тестов файлы.
+# результат хранится отдельно под префиксом $(objtree)/$(tests-prefix)
+export build-for-tests = y
+
+
+# =============================================
+
 phony += master
 master: cflags += -I$(srctree)/master/include
-master: $(master-complete-prefix) $(addprefix $(master-complete-prefix)/, $(master-tests))
+master: build-master-for-tests $(master-complete-prefix) $(addprefix execute/, $(master-tests))
+
+phony += build-master-for-tests
+build-master-for-tests:
+	$(q)$(MAKE) -C $(srctree)/master
 
 $(master-complete-prefix):
 	$(q)mkdir -p $@
 
-$(master-complete-prefix)/%: $(local)/$(master-tests-prefix)/%.c
-	$(q)$(cc) $(cflags) -c $^ -o $(basename $@).test.o
-	$(q)$(ld) $(ldflags) $(basename $@).test.o -o $@ $(addprefix -l, $(libs))
+# см. https://stackoverflow.com/questions/9007039/makefile-execute-phonytargets-of-a-file-only-if-file-does-not-exists
+# https://ftp.gnu.org/old-gnu/Manuals/make-3.79.1/html_node/make_98.html#SEC97
+.INTERMEDIATE: $(addprefix execute/, $(master-tests))
+execute/%: $(master-complete-prefix)/%
+	$(q)LD_PRELOAD=$(cmocka-lib) $<
+
+# выглядит уродливо, но пока так
+$(master-complete-prefix)/%: $(master-complete-prefix)/%.o
+	$(q)$(ld) $(ldflags) $(addprefix $(master-$(basename $(notdir $@))-objtree)/, $(master-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
+
+$(master-complete-prefix)/%.o: $(local)/$(master-tests-prefix)/%.c
+	$(q)$(cc) $(cflags) -c $^ -o $@
 
 
 # =============================================
 
 phony += slave
 slave: cflags += -I$(srctree)/slave/include
-slave: $(slave-complete-prefix) $(addprefix $(slave-complete-prefix)/, $(slave-tests))
+slave: build-slave-for-tests $(slave-complete-prefix) $(addprefix execute/, $(slave-tests))
+
+phony += build-slave-for-tests
+build-slave-for-tests:
+	$(q)$(MAKE) -C $(srctree)/slave
 
 $(slave-complete-prefix):
 	$(q)mkdir -p $@
 
-$(slave-complete-prefix)/%: required-objs := $(addprefix $(slave-$(basename %)-objtree), $(slave-$(basename %)-objs))
-$(slave-complete-prefix)/%: $(required-objs) $(local)/$(slave-tests-prefix)/%.c
-	$(q)$(cc) $(cflags) -c $^ -o $(basename $@).test.o
-	$(q)$(ld) $(ldflags) $(basename $@).test.o -o $@ $(addprefix -l, $(libs))
+.INTERMEDIATE: $(addprefix execute/, $(slave-tests))
+execute/%: $(slave-complete-prefix)/%
+	$(q)LD_PRELOAD=$(cmocka-lib) $<
 
-$(slave-%-objtree):
-	$(q)mkdir -p $@
-	
+$(slave-complete-prefix)/%: $(slave-complete-prefix)/%.o
+	$(q)$(ld) $(ldflags) $(addprefix $(slave-$(basename $(notdir $@))-objtree)/, $(slave-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
+
+$(slave-complete-prefix)/%.o: $(local)/$(slave-tests-prefix)/%.c
+	$(q)$(cc) $(cflags) -c $^ -o $@
 
 
 # =============================================

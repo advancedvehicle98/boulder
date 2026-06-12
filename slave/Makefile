@@ -3,6 +3,10 @@ include $(config)
 
 # ==============================================================
 
+ifeq ($(build-for-tests),y)
+	objtree := $(objtree)/tests
+endif
+
 local         := $(srctree)/$(slave-prefix)
 local-srctree := $(local)/src
 prefix        := $(slave-prefix)
@@ -12,20 +16,7 @@ target := $(objtree)/$(prefix)/slave
 
 # ==============================================================
 
-# soc-prerequisites должен быть обределён в Makefile.soc
-
-phony += all
-all: objtree-prefixes soc-prerequisites $(target) soc-post-build
-
-
-# ==============================================================
-
-include $(scripts)/make/Makefile.canard
-
-
-# ==============================================================
-
-# желательно префиксы расписывать в алфавитном пордке
+# желательно префиксы расписывать в алфавитном порядке
 
 can-prefix := can
 can-objs-y := init.o on_receive.o should_accept_transfer.o
@@ -46,6 +37,25 @@ objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(uart-prefix)/, $(uart-objs-y))
 
 # --------------------------------------------
+
+# soc-prerequisites и soc-post-build должны быть обределены в Makefile.soc
+
+all-deps := objtree-prefixes soc-prerequisites $(target) soc-post-build
+
+ifeq ($(build-for-tests),y)
+all-deps := objtree-prefixes $(addprefix $(objtree)/$(prefix)/, $(objs))
+endif
+
+phony += all
+all: $(all-deps)
+
+# --------------------------------------------
+
+include $(scripts)/make/Makefile.canard
+
+# --------------------------------------------
+
+ifneq ($(build-for-tests),y)
 
 ifeq ($(CONFIG_SLAVE_TOOLCHAIN),)
 
@@ -74,7 +84,7 @@ else
 	ld := $(CONFIG_SLAVE_TOOLCHAIN_LD_PATH)
 endif
 
-else
+else # ifneq ($(CONFIG_SLAVE_TOOLCHAIN),)
 
 toolchain = $(patsubst "%",%,$(CONFIG_SLAVE_TOOLCHAIN))-
 
@@ -83,11 +93,25 @@ cc    := $(toolchain)$(cc)
 ld    := $(toolchain)$(ld)
 objcp := $(toolchain)$(objcp)
 
-endif
+endif # ifeq ($(CONFIG_SLAVE_TOOLCHAIN),)
 
-export cc ld
+endif # ifneq ($(build-for-tests),y)
+
+# на всякий
+export cc ld asm objcp
 
 # -------------------------------------------------------------
+
+ifeq ($(build-for-tests),y)
+	CONFIG_SLAVE_BOARD_VENDOR := "dummy"
+	CONFIG_SLAVE_BOARD_PREFIX := "dummy"
+
+	CONFIG_SLAVE_SOC_VENDOR := "dummy"
+	CONFIG_SLAVE_SOC_PREFIX := "dummy"
+
+	CONFIG_SLAVE_ARCH_PREFIX := "dummy"
+	CONFIG_SLAVE_ARCH_SUFFIX := "dummy"
+endif
 
 board-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_VENDOR))
 board-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_PREFIX))
@@ -108,7 +132,7 @@ boardtree := $(local)/board/$(board-complete-prefix)
 soctree   := $(local)/soc/$(soc-complete-prefix)
 archtree  := $(local)/arch/$(arch-complete-prefix)
 
-include $(soctree)/Makefile.soc
+-include $(soctree)/Makefile.soc
 
 # здесь и далее в подобных переменных строго плюс-равно т.к
 # из Makefile.soc могут быть добавлены специфичные для

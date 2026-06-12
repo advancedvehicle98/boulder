@@ -1,28 +1,24 @@
 cmocka-subdir  := $(srctree)/modules/cmocka
 cmocka-outdir  := $(cmocka-subdir)/out
 
-cmocka-include := $(cmocka-subdir)/include
-cmocka-libdir := $(cmocka-outdir)/src
-cmocka-lib := $(cmocka-libdir)/libcmocka.so
+export cmocka-include := $(cmocka-subdir)/include
+export cmocka-libdir := $(cmocka-outdir)/src
+export cmocka-lib := $(cmocka-libdir)/libcmocka.so
 
-export cflags += -I$(cmocka-include)
-
-export ldflags += -L$(cmocka-libdir)
-
-export libs += cmocka
 
 # ---------------------------------------------------------
 
 phony += tests
-tests: $(cmocka-lib)
-	$(q)$(MAKE) -C $(testtree)
+tests: tests-master tests-slave
 
 phony += tests-master
-tests-master: $(cmocka-lib)
+tests-master: dsdl $(cmocka-lib)
+	$(q)rm -rf $(objtree)/tests/master
 	$(q)$(MAKE) -C $(testtree) master
 
 phony += tests-slave
-tests-slave: $(cmocka-lib)
+tests-slave: dsdl $(cmocka-lib)
+	$(q)rm -rf $(objtree)/tests/slave
 	$(q)$(MAKE) -C $(testtree) slave
 
 
