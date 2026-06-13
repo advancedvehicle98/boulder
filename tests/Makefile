@@ -4,15 +4,14 @@ tests-prefix := tests
 
 # ------------------------------------------------------------------
 
-# -------------------------
 slave-queue-objs := queue/pop.o queue/init.o queue/push.o ram/copy.o
 
-slave-queue-srctree := $(srctree)/slave/src
-slave-queue-objtree := $(objtree)/$(tests-prefix)/slave
-# -------------------------
+slave-srctree := $(srctree)/slave/src
+slave-objtree := $(objtree)/$(tests-prefix)/slave
 
 slave-tests-prefix := slave
-slave-tests := queue.test
+slave-tests := \
+	queue.test 
 
 slave-complete-prefix := $(objtree)/$(tests-prefix)/$(slave-tests-prefix)
 
@@ -66,10 +65,11 @@ $(master-complete-prefix):
 .INTERMEDIATE: $(addprefix execute/, $(master-tests))
 execute/%: $(master-complete-prefix)/%
 	$(q)LD_PRELOAD=$(cmocka-lib) $<
+	$(q)cp $< $(objtree)/$(tests-prefix)
 
 # выглядит уродливо, но пока так
 $(master-complete-prefix)/%: $(master-complete-prefix)/%.o
-	$(q)$(ld) $(ldflags) $(addprefix $(master-$(basename $(notdir $@))-objtree)/, $(master-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
+	$(q)$(ld) $(ldflags) $(addprefix $(master-objtree)/, $(master-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
 
 $(master-complete-prefix)/%.o: $(local)/$(master-tests-prefix)/%.c
 	$(q)$(cc) $(cflags) -c $^ -o $@
@@ -88,15 +88,13 @@ build-slave-for-tests:
 $(slave-complete-prefix):
 	$(q)mkdir -p $@
 
-# to-do: как-то убрать intermediate, чтобы makefile не удалял
-# автоматом полученные файлы
-
 .INTERMEDIATE: $(addprefix execute/, $(slave-tests))
 execute/%: $(slave-complete-prefix)/%
 	$(q)LD_PRELOAD=$(cmocka-lib) $<
+	$(q)cp $< $(objtree)/$(tests-prefix)
 
 $(slave-complete-prefix)/%: $(slave-complete-prefix)/%.o
-	$(q)$(ld) $(ldflags) $(addprefix $(slave-$(basename $(notdir $@))-objtree)/, $(slave-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
+	$(q)$(ld) $(ldflags) $(addprefix $(slave-objtree)/, $(slave-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
 
 $(slave-complete-prefix)/%.o: $(local)/$(slave-tests-prefix)/%.c
 	$(q)$(cc) $(cflags) -c $^ -o $@

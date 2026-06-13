@@ -26,14 +26,14 @@ typedef struct _buffer_queue_t {
 } buffer_queue_t;
 
 
-static bool
+static inline bool
 slave_buffer_queue_is_empty( __IN buffer_queue_t * const queue )
 {
 	return !!( queue->flags & BUFFER_QUEUE_IS_EMPTY );
 }
 
 
-static bool
+static inline bool
 slave_buffer_queue_is_full( __IN buffer_queue_t * const queue )
 {
 	return !!( queue->flags & BUFFER_QUEUE_IS_FULL );
@@ -67,45 +67,6 @@ __HOT size_t slave_buffer_queue_pop( __STATE buffer_queue_t *queue,
 									 __OUT   const size_t    size );
 
 __HOT uint8_t slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue );
-
-
-// вот эта очередь не говно =======================================
-
-// см. https://github.com/filipecalasans/ringbuffer
-
-
-typedef struct _fast_queue_t {
-	void *buffer;
-	size_t head, tail, size_mask;
-} fast_queue_t;
-
-
-static bool
-slave_fast_queue_is_empty( __IN fast_queue_t * const queue )
-{
-	return queue->head == queue->tail;
-}
-
-
-// src/queue/fast_init.c
-void slave_fast_queue_init( __STATE fast_queue_t *queue,
-							__IN    void         *buffer,
-							__IN    const size_t  size );
-
-// src/queue/fast_push.c
-__HOT void slave_fast_queue_push( __STATE fast_queue_t *queue,
-								  __IN    void * const  data,
-								  __IN    const size_t  size );
-
-__HOT void slave_fast_queue_push_byte( __STATE fast_queue_t  *queue,
-									   __IN    const uint8_t  data );
-
-// src/queue/fast_pop.c
-__HOT void slave_fast_queue_pop( __STATE fast_queue_t *queue,
-								 __OUT   void * const  data,
-								 __OUT   const size_t  size );
-
-__HOT uint8_t slave_fast_queue_pop_byte( __STATE fast_queue_t *queue );
 
 
 #endif // ! __BOULDER_SLAVE_QUEUE_H

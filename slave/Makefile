@@ -22,14 +22,13 @@ can-prefix := can
 can-objs-y := init.o on_receive.o should_accept_transfer.o
 
 queue-prefix := queue
-queue-objs-y := init.o pop.o push.o \
-	fast_init.o fast_pop.o fast_push.o
+queue-objs-y := init.o pop.o push.o
 
 ram-prefix := ram
-ram-objs-y := copy.o
+ram-objs-y := copy.o foramt.o
 
 uart-prefix := uart
-uart-objs-y := init.o
+uart-objs-y := init.o printf.o
 
 objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y)) \

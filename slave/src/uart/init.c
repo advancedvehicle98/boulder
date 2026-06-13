@@ -13,13 +13,15 @@ slave_uart_init( __STATE uart_state_t * const s )
 
 	// настройка очередей ------------------------------------------
 
-	slave_fast_queue_init( &( s->serial_rx_queue ),
-						   &( s->serial_rx_queue_buffer ),
-						   CONFIG_SLAVE_SERIAL_RX_QUEUE_LEN );
+	slave_buffer_queue_init( &( s->serial_rx_queue ),
+							 &( s->serial_rx_queue_buffer ),
+							 CONFIG_SLAVE_SERIAL_RX_QUEUE_LEN,
+							 BUFFER_QUEUE_OVERWRITE );
 
-	slave_fast_queue_init( &( s->serial_tx_queue ),
-						   &( s->serial_tx_queue_buffer ),
-						   CONFIG_SLAVE_SERIAL_TX_QUEUE_LEN );
+	slave_buffer_queue_init( &( s->serial_tx_queue ),
+							 &( s->serial_tx_queue_buffer ),
+							 CONFIG_SLAVE_SERIAL_TX_QUEUE_LEN,
+							 BUFFER_QUEUE_OVERWRITE );
 	
 	return UART_INIT_SUCCESS;
 }

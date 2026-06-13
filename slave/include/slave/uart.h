@@ -19,17 +19,21 @@ typedef struct _uart_state_t {
 	// см. soc/<soc>/include/soc/uart.h
 	uart_soc_state_t soc;
 
-	fast_queue_t serial_rx_queue;
+	buffer_queue_t serial_rx_queue;
 	uint8_t serial_rx_queue_buffer[ CONFIG_SLAVE_SERIAL_RX_QUEUE_LEN ];
-	fast_queue_t serial_tx_queue;
+	buffer_queue_t serial_tx_queue;
 	uint8_t serial_tx_queue_buffer[ CONFIG_SLAVE_SERIAL_TX_QUEUE_LEN ];
 } uart_state_t;
 
 
-// src/uart/init.c
-__COLD uart_init_error_t slave_uart_init( __STATE uart_state_t * const s );
 // soc/<soc>/uart/init.c
 __COLD uart_init_error_t slave_soc_uart_init( __STATE uart_soc_state_t * const s );
+// src/uart/init.c
+__COLD uart_init_error_t slave_uart_init( __STATE uart_state_t * const s );
+// src/uart/printf.c
+__HOT size_t slave_uart_printf( __STATE uart_state_t * const s,
+								__IN    const char *         fmt, ... );
+__HOT size
 
 
 #endif // ! __BOULDER_SLAVE_UART_H
