@@ -25,10 +25,10 @@ queue-prefix := queue
 queue-objs-y := init.o pop.o push.o
 
 ram-prefix := ram
-ram-objs-y := copy.o foramt.o
+ram-objs-y := copy.o format_string.o
 
 uart-prefix := uart
-uart-objs-y := init.o printf.o
+uart-objs-y := init.o printf.o transmit.o
 
 objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y)) \
