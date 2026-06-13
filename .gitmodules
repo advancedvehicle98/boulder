@@ -13,3 +13,6 @@
 [submodule "modules/libcanard"]
 	path = modules/libcanard
 	url = https://github.com/dronecan/libcanard/
+[submodule "modules/newlib"]
+	path = modules/newlib
+	url = https://sourceware.org/git/newlib-cygwin.git

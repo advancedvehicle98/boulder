@@ -16,6 +16,13 @@ config SLAVE_SERIAL_DEBUG_MSGS
 	   default n
 
 
+config SLAVE_SERIAL_UNINTELLIGIBLE_VALUES
+	   bool "Output value bytes as is (no formatting except for characters and strings)"
+	   default y
+	   help
+		 Disables value formatting in slave_ram_format_string. In that case, values are printed from memory as is, but they're enclosed in curly braces. It's up to the receiver to reinterpret the values. This is meant to save time when printing messages. For normal operation (when we're not debugging) it is recommended to disable debug messages (see SLAVE_SERIAL_DEBUG_MSGS). This option may be disabled if the device allows to afford extra time to format values.
+
+
 choice SLAVE_SERIAL_BAUD_CHOICE
 	   prompt "Serial communication baud"
 
