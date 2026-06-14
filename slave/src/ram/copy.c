@@ -8,7 +8,7 @@
 bool _has_zero( const uint32_t x );
 
 
-uint8_t
+void
 slave_ram_copy( __OUT uint8_t * const dest,
 				__IN  uint8_t * const src,
 				__IN  const size_t    size )
@@ -40,7 +40,7 @@ slave_ram_copy( __OUT uint8_t * const dest,
 }
 
 
-uint8_t
+void
 slave_ram_copy_reverse( __OUT uint8_t * const dest,
 						__IN  uint8_t * const src,
 						__IN  const size_t    size )
@@ -86,7 +86,7 @@ slave_ram_copy_string( __OUT char * const dest,
 	char *_src = src;
 
 	// 4 == sizeof( uint32_t )
-	size_t few = ( -(int32_t) dest ) % 4;
+	size_t few = ( -(long) dest ) % 4;
 
 	for ( ; few; --few ) {
 		char c = *_src++;
@@ -96,7 +96,6 @@ slave_ram_copy_string( __OUT char * const dest,
 
 	uint32_t *dest_end32 = (uint32_t *) dest_end;
 	uint32_t *src32 = (uint32_t *) _src;
-	char *zero;
 	uint32_t chars;
 	
 	while ( dest_end < dest_boundary ) {

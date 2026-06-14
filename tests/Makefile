@@ -6,12 +6,15 @@ tests-prefix := tests
 
 slave-queue-objs := queue/pop.o queue/init.o queue/push.o ram/copy.o
 
+slave-format_string-objs := ram/copy.o ram/format_string.o
+
 slave-srctree := $(srctree)/slave/src
 slave-objtree := $(objtree)/$(tests-prefix)/slave
 
 slave-tests-prefix := slave
 slave-tests := \
-	queue.test 
+	queue.test \
+	format_string.test
 
 slave-complete-prefix := $(objtree)/$(tests-prefix)/$(slave-tests-prefix)
 
@@ -64,8 +67,8 @@ $(master-complete-prefix):
 # https://ftp.gnu.org/old-gnu/Manuals/make-3.79.1/html_node/make_98.html#SEC97
 .INTERMEDIATE: $(addprefix execute/, $(master-tests))
 execute/%: $(master-complete-prefix)/%
-	$(q)LD_PRELOAD=$(cmocka-lib) $<
 	$(q)cp $< $(objtree)/$(tests-prefix)
+	$(q)LD_PRELOAD=$(cmocka-lib) $<
 
 # выглядит уродливо, но пока так
 $(master-complete-prefix)/%: $(master-complete-prefix)/%.o
@@ -90,8 +93,8 @@ $(slave-complete-prefix):
 
 .INTERMEDIATE: $(addprefix execute/, $(slave-tests))
 execute/%: $(slave-complete-prefix)/%
-	$(q)LD_PRELOAD=$(cmocka-lib) $<
 	$(q)cp $< $(objtree)/$(tests-prefix)
+	$(q)LD_PRELOAD=$(cmocka-lib) $<
 
 $(slave-complete-prefix)/%: $(slave-complete-prefix)/%.o
 	$(q)$(ld) $(ldflags) $(addprefix $(slave-objtree)/, $(slave-$(basename $(notdir $@))-objs)) $< -o $@ $(addprefix -l, $(libs))
