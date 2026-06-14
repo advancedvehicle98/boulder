@@ -36,4 +36,11 @@ config SLAVE_SOC_PREFIX
 	   default "esp32_s3" if SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
 	   default "sam3x8e"  if SLAVE_SOC_ATMEL_SAM3X8E
 
+
+# ------------------------------------------------------
+
+config SLAVE_SOC_HAS_FPU
+	   bool
+	   default n if SLAVE_SOC_ATMEL_SAM3X8E
+
 endmenu

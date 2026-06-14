@@ -6,7 +6,7 @@ tests-prefix := tests
 
 slave-queue-objs := queue/pop.o queue/init.o queue/push.o ram/copy.o
 
-slave-format_string-objs := ram/copy.o ram/format_string.o
+slave-format_string-objs := ram/copy.o ram/format_string.o arch/dummy/dummy/math/divmod10.o
 
 slave-srctree := $(srctree)/slave/src
 slave-objtree := $(objtree)/$(tests-prefix)/slave

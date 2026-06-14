@@ -32,9 +32,75 @@ uart-objs-y := init.o printf.o transmit.o
 
 objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y)) \
+	$(addprefix $(math-prefix)/, $(math-objs-y)) \
 	$(addprefix $(queue-prefix)/, $(queue-objs-y)) \
 	$(addprefix $(ram-prefix)/, $(ram-objs-y)) \
 	$(addprefix $(uart-prefix)/, $(uart-objs-y))
+
+# -------------------------------------------------------------
+
+ifeq ($(build-for-tests),y)
+	CONFIG_SLAVE_BOARD_VENDOR := "dummy"
+	CONFIG_SLAVE_BOARD_PREFIX := "dummy"
+
+	CONFIG_SLAVE_SOC_VENDOR := "dummy"
+	CONFIG_SLAVE_SOC_PREFIX := "dummy"
+
+	CONFIG_SLAVE_ARCH_PREFIX := "dummy"
+	CONFIG_SLAVE_ARCH_SUFFIX := "dummy"
+endif
+
+board-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_VENDOR))
+board-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_PREFIX))
+
+board-complete-prefix := $(board-vendor)/$(board-prefix)
+
+soc-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_VENDOR))
+soc-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_PREFIX))
+
+soc-complete-prefix := $(soc-vendor)/$(soc-prefix)
+
+arch-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_ARCH_PREFIX))
+arch-suffix := $(patsubst "%",%,$(CONFIG_SLAVE_ARCH_SUFFIX))
+
+arch-complete-prefix := $(arch-prefix)/$(arch-suffix)
+
+boardtree := $(local)/board/$(board-complete-prefix)
+soctree   := $(local)/soc/$(soc-complete-prefix)
+archtree  := $(local)/arch/$(arch-complete-prefix)
+
+# здесь и далее в подобных переменных строго плюс-равно т.к
+# из Makefile.soc могут быть добавлены специфичные для
+# платформы файлы
+
+board-objs += init.o
+
+# -----------------------------------------
+
+soc-uart-prefix := uart
+soc-uart-objs-y += init.o
+
+soc-can-prefix := can
+soc-can-objs-y += init.o
+
+soc-objs += init.o \
+	$(addprefix $(soc-can-prefix)/, $(soc-can-objs-y)) \
+	$(addprefix $(soc-uart-prefix)/, $(soc-uart-objs-y))
+
+# -----------------------------------------
+
+arch-math-prefix := math
+arch-math-objs-y = divmod10.o
+
+arch-objs += \
+	$(addprefix $(arch-math-prefix)/, $(arch-math-objs-y))
+
+# -----------------------------------------
+
+objs += \
+	$(addprefix soc/$(soc-complete-prefix)/, $(soc-objs)) \
+	$(addprefix boards/$(board-complete-prefix)/, $(board-objs)) \
+	$(addprefix arch/$(arch-complete-prefix)/, $(arch-objs))
 
 # --------------------------------------------
 
@@ -100,59 +166,9 @@ endif # ifneq ($(build-for-tests),y)
 # на всякий
 export cc ld asm objcp
 
-# -------------------------------------------------------------
-
-ifeq ($(build-for-tests),y)
-	CONFIG_SLAVE_BOARD_VENDOR := "dummy"
-	CONFIG_SLAVE_BOARD_PREFIX := "dummy"
-
-	CONFIG_SLAVE_SOC_VENDOR := "dummy"
-	CONFIG_SLAVE_SOC_PREFIX := "dummy"
-
-	CONFIG_SLAVE_ARCH_PREFIX := "dummy"
-	CONFIG_SLAVE_ARCH_SUFFIX := "dummy"
-endif
-
-board-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_VENDOR))
-board-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_BOARD_PREFIX))
-
-board-complete-prefix := $(board-vendor)/$(board-prefix)
-
-soc-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_VENDOR))
-soc-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_PREFIX))
-
-soc-complete-prefix := $(soc-vendor)/$(soc-prefix)
-
-arch-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_ARCH_PREFIX))
-arch-suffix := $(patsubst "%",%,$(CONFIG_SLAVE_ARCH_SUFFIX))
-
-arch-complete-prefix := $(arch-prefix)/$(arch-suffix)
-
-boardtree := $(local)/board/$(board-complete-prefix)
-soctree   := $(local)/soc/$(soc-complete-prefix)
-archtree  := $(local)/arch/$(arch-complete-prefix)
+# -----------------------------
 
 -include $(soctree)/Makefile.soc
-
-# здесь и далее в подобных переменных строго плюс-равно т.к
-# из Makefile.soc могут быть добавлены специфичные для
-# платформы файлы
-
-board-objs += init.o
-
-soc-uart-prefix := uart
-soc-uart-objs-y += init.o
-
-soc-can-prefix := can
-soc-can-objs-y += init.o
-
-soc-objs += init.o \
-	$(addprefix $(soc-can-prefix)/, $(soc-can-objs-y)) \
-	$(addprefix $(soc-uart-prefix)/, $(soc-uart-objs-y))
-
-objs += \
-	$(addprefix soc/$(soc-complete-prefix)/, $(soc-objs)) \
-	$(addprefix boards/$(board-complete-prefix)/, $(board-objs))
 
 # т.е. в каждом soc-е должен быть свой include, в котором есть soc, в котором есть перечень
 # обязательных заголовков

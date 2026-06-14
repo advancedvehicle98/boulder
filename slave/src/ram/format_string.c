@@ -1,5 +1,7 @@
 #include <slave/ram.h>
 
+#include <slave/math.h>
+
 #include <stdarg.h>
 #include <stdbool.h>
 
@@ -127,8 +129,9 @@ _format_integer( __OUT char * const   out,
 	char *out_boundary = out + max_size;
 	uint32_t x = integer;
 	size_t reverse_offset = 0;
-	size_t b;
 
+	// добавляем минус -------------------------------
+	
 	if ( is_signed ) {
 		if ( str_end + 1 == out_boundary ) return out_boundary;
 		
@@ -138,25 +141,51 @@ _format_integer( __OUT char * const   out,
 			++reverse_offset;
 		}
 	}
+
+	// добавляем префикс 0x/0b -----------------------
 	
 	if ( base == 2 || base == 16 ) {
 		if ( str_end + 2 >= out_boundary ) return out_boundary;
 		*str_end++ = '0';
 		*str_end++ = base == 2 ? 'b' : 'x';
 		reverse_offset += 2;
-		b = base;
 	}
-	else
-		b = 10;
+
+	// копируем цифры ------------------------------
+
+	size_t shift = 4, mask = 0xF;
+
+	if ( base == 2 ) shift = mask = 1;
 
 	while ( x && str_end < out_boundary ) {
-		char c = (char) ( x % b ) + '0';
-		if ( c > '9' ) c += 'A' - '9' - 1;
-		*str_end++ = c;
-		x /= b;
-	}
+		char c;
+		uint32_t c32;
+		
+		switch ( base ) {
 
-	// разворачиваем цифры
+		case 2:
+		case 16: {
+			c = (char) ( x & mask );
+			x >>= shift;
+		} break;
+			
+		default: {
+			slave_arch_math_divmod10( &x, &c32, x );
+			c = (char) c32;
+			/* c = (char) ( x % 10 ); */
+			/* x /= 10; */
+		}
+			
+		}
+
+		c += '0';
+		if ( c > '9' ) c += 'A' - '9' - 1;
+		
+		*str_end++ = c;
+	}
+	
+
+	// разворачиваем цифры -------------------------------
 	
 	char *right = str_end-1;
 	char *left  = out + reverse_offset;
