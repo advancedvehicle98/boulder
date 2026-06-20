@@ -1,0 +1,11 @@
+phony += flash
+flash: soc-flash
+
+soc-vendor := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_VENDOR))
+soc-prefix := $(patsubst "%",%,$(CONFIG_SLAVE_SOC_PREFIX))
+
+soc-path := $(srctree)/slave/soc/$(soc-vendor)/$(soc-prefix)
+
+slave-firmware := $(objtree)/slave/slave.hex
+
+include $(soc-path)/Makefile.flash

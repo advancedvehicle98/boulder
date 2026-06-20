@@ -1,0 +1,8 @@
+menu "Flashing"
+
+
+config FLASHING_UPLOAD_PORT
+	   string "Upload port (/dev/<port>)"
+	   default "/dev/ttyUSB0"
+
+endmenu

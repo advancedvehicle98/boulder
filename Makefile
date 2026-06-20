@@ -56,6 +56,8 @@ include $(scripts)/make/Makefile.test
 
 include $(scripts)/make/Makefile.build
 
+include $(scripts)/make/Makefile.flash
+
 
 # ===============================================================
 

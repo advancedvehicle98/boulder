@@ -1,5 +1,6 @@
 #include <slave/math.h>
 
+#include <common/config.h>
 #include <common/defines.h>
 
 
@@ -11,6 +12,8 @@ slave_arch_math_divmod10( __OUT       uint32_t *div,
 						  __OUT       uint32_t *mod,
 						  __IN  const uint32_t  x )
 {
+#ifdef CONFIG_SLAVE_FAST_MATH
+	
 	static uint8_t table[ 16 ] = {
 		0, 1, 2, 2, 3, 4, 5,
 		5, 6, 7, 7, 8, 9, 0
@@ -66,8 +69,8 @@ slave_arch_math_divmod10( __OUT       uint32_t *div,
 
 	// n = ( 0x19999999*x + ( x >> 1 ) + ( x >> 3 ) ) >> 28
 	  
-	  "movw     r0, 0x9999  \n"
-	  "movt     r0, 0x1999  \n"
+	  "movw    r0, 0x9999   \n"
+	  "movt    r0, 0x1999   \n"
 	  "mul     r0, %2       \n"
 	  "mov     r1, %2       \n"
 	  "asr     r1, r1, 1    \n"
@@ -88,6 +91,10 @@ slave_arch_math_divmod10( __OUT       uint32_t *div,
 	: "r"( x ), "g"( table )
 	: "r4", "r2", "r1", "r0" );
 	
-	/* *div = x / 10; */
-	/* *mod = x % 10; */
+#else
+
+	*div = x / 10;
+	*mod = x % 10;
+	
+#endif // CONFIG_SLAVE_FAST_MATH
 }

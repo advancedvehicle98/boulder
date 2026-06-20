@@ -35,11 +35,12 @@ _uart_irq_handler( _uart_instance_t * const inst )
 
 	// если что-то нужно ещё отправить ------------------------
 	
-	if ( soc_uart_is_sending_data( status ) )
+	if ( soc_uart_is_sending_data( status ) ) {
 		if ( ! slave_buffer_queue_is_empty( &( uart->serial_tx_queue ) ) )
 			iface->UART_THR = slave_buffer_queue_pop_byte( &( uart->serial_tx_queue ) );
 		else
 			iface->UART_IDR = UART_IDR_TXRDY;
+	}
 
 	// обработка ошибок --------------------------------------
 	

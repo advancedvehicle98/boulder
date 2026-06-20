@@ -104,6 +104,18 @@ objs += \
 
 # --------------------------------------------
 
+ldflags += \
+	--specs=nosys.specs \
+	-Wl,--check-sections \
+	-Wl,--gc-sections \
+	-Wl,--unresolved-symbols=report-all \
+	-Wl,--warn-common \
+	-Wl,--warn-section-align
+
+cflags += -nostdlib --specs=nosys.specs
+
+# --------------------------------------------
+
 # soc-prerequisites и soc-post-build должны быть обределены в Makefile.soc
 
 all-deps := objtree-prefixes soc-prerequisites $(target) soc-post-build
@@ -167,6 +179,8 @@ endif # ifneq ($(build-for-tests),y)
 export cc ld asm objcp
 
 # -----------------------------
+
+soc-firmware := $(objtree)/$(prefix)/slave.hex
 
 -include $(soctree)/Makefile.soc
 

@@ -52,13 +52,11 @@ $(soc-outdir)/$(soc-lib-dir):
 
 # ============================================================
 
-soc-firmware := $(objtree)/$(prefix)/slave.hex
-
 phony += soc-post-build
 soc-post-build: $(soc-firmware)
 
 $(soc-firmware): $(target)
-	$(objcp) -O binary $^ $@
+	$(q)$(objcp) -O binary $^ $@
 
 
 # ============================================================

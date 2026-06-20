@@ -8,3 +8,7 @@ cflags += \
 asflags += \
 	-mcpu-cortex-m3 \
 	-mthumb
+
+ldflags += \
+	-mcpu=cortex-m3 \
+	-mthumb

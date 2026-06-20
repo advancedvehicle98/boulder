@@ -1,7 +1,8 @@
+#include <common/defines.h>
+#include <common/config.h>
 #include <slave/board.h>
 #include <slave/state.h>
-
-#include <common/defines.h>
+#include <slave/uart.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -30,6 +31,11 @@ main( void )
 
 	if ( init_status != SLAVE_INIT_SUCCESS )
 		slave_init_log_and_halt( init_status );
+
+#ifdef CONFIG_SLAVE_SERIAL_DEBUG_MSGS
+	const char _init_uart_str[] = "init success";
+	slave_uart_transmit( &( state.uart ), _init_uart_str, sizeof( _init_uart_str ) );
+#endif
 
 	// рантайм ---------------------------------------------------
 	

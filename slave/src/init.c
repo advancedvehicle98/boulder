@@ -19,6 +19,7 @@ slave_init( __STATE boulder_slave_state_t *s )
 		return SLAVE_INIT_FAILED_UART_INIT;
 	
 	// настройка CAN-шины --------------------------------------------------
+	
 	can_state_t *can = &( s->can );
 
 	can_init_error_t can_init_error = slave_can_init( can );

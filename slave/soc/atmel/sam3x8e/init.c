@@ -67,12 +67,12 @@ _clock_init( void )
 void
 _eefc_init( void )
 {
-	EFC0->EEFC_FMR = EFC1->EEFC_FMR = EEFC_FMR_FWS(4);
+	EFC0->EEFC_FMR = EFC1->EEFC_FMR = EEFC_FMR_FWS( 4 );
 }
 
 
 uint32_t
-_measure_main_clock( void )
+_Pmeasure_main_clock( void )
 {
 	while ( ! ( PMC->CKGR_MCFR & CKGR_MCFR_MAINFRDY ) ) { }
 	return PMC->CKGR_MCFR & CKGR_MCFR_MAINF_Msk;

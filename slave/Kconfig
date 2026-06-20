@@ -6,6 +6,8 @@ source "slave/soc/Kconfig"
 source "slave/arch/Kconfig"
 
 source "slave/kconfig/Kconfig.safety"
+source "slave/kconfig/Kconfig.opts"
+source "slave/kconfig/Kconfig.flash"
 
 
 menu "Serial communication" #=======================================
@@ -16,11 +18,20 @@ config SLAVE_SERIAL_DEBUG_MSGS
 	   default n
 
 
+# это на новый год
+
 config SLAVE_SERIAL_UNINTELLIGIBLE_VALUES
-	   bool "Output value bytes as is (no formatting except for characters and strings)"
+	   bool # "Output value bytes as is (no formatting except for characters and strings)"
 	   default y
 	   help
-		 Disables value formatting in slave_ram_format_string. In that case, values are printed from memory as is, but they're enclosed in curly braces. It's up to the receiver to reinterpret the values. This is meant to save time when printing messages. For normal operation (when we're not debugging) it is recommended to disable debug messages (see SLAVE_SERIAL_DEBUG_MSGS). This option may be disabled if the device allows to afford extra time to format values.
+		 Disables value formatting in slave_ram_format_string.
+		 In that case, values are printed from memory as is, but they're
+		 enclosed in curly braces. It's up to the receiver to reinterpret
+		 the values. This is meant to save time when printing messages.
+		 For normal operation (when we're not debugging) it is recommended
+		 to disable debug messages (see SLAVE_SERIAL_DEBUG_MSGS). This option
+		 may be disabled if the device allows to afford extra time to format
+		 values.
 
 
 choice SLAVE_SERIAL_BAUD_CHOICE

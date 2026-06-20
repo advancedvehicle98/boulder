@@ -1,0 +1,9 @@
+menu "Optimization"
+
+
+config SLAVE_FAST_MATH
+	   bool "Enable fast math"
+	   default y
+
+
+endmenu

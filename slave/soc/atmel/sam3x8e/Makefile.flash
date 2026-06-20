@@ -1,0 +1,2 @@
+soc-flash:
+	$(q)bossac $(BOSSAC_FLAGS) --port $(CONFIG_FLASHING_UPLOAD_PORT) --reset --write --verify --erase --boot $(slave-firmware)
