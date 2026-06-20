@@ -6,9 +6,6 @@
 #include <stdbool.h>
 
 
-static __INLINE void _pin_setup( void );
-
-
 board_init_error_t
 slave_board_init( __STATE soc_state_t *soc )
 {
@@ -18,10 +15,6 @@ slave_board_init( __STATE soc_state_t *soc )
 	
 	if ( soc_init_status != SOC_INIT_SUCCESS )
 		return BOARD_INIT_FAILED_SOC_INIT;
-
-	// настройка пинов -----------------------------
-	
-	_pin_setup();
 	
 	return BOARD_INIT_SUCCESS;
 }
@@ -31,13 +24,4 @@ void
 slave_board_init_log_and_halt( __IN const board_init_error_t e )
 {
 	while ( true ) { }
-}
-
-
-void
-_pin_setup( void )
-{
-	// пины для моторов
-
-	/* PIO_SetOutput(  ); */
 }

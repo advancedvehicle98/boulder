@@ -11,14 +11,22 @@
 boulder_slave_state_t *boulder;
 
 
+void
+delay ( volatile uint32_t time )
+{
+	while ( time-- ) __asm__ ( "nop" );
+}
+
+
 __NORETURN void
 main( void )
 {
+	
 	boulder_slave_state_t state;
 
 	boulder = &state;
 
-	// аппаратная инициализация --------------------------------------
+/* 	// аппаратная инициализация -------------------------------------- */
 	
 	board_init_error_t board_init_status = slave_board_init( &( state.soc ) );
 

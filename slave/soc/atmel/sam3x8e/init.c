@@ -1,6 +1,7 @@
 #include <slave/soc.h>
 
 #include <common/config.h>
+#include <soc/can.h>
 #include <soc/state.h>
 
 #include <libsam/include/pio.h>
@@ -14,7 +15,6 @@ static uint32_t _measure_main_clock( void );
 static void _periph_clock_init( void );
 static void _pio_init( void );
 static void _plla_init( void );
-static void _uart_init( void );
 
 
 // по сути, это то же самое, что и SystemInit из system_sam3xa.c
@@ -47,15 +47,27 @@ _clock_init( void )
 #ifdef CONFIG_SAM3X8E_USE_XTAL
 	// переключение main clock на кристаллический осциллятор
 	
-	PMC->CKGR_MOR |= CKGR_MOR_MOSCSEL;
+	PMC->CKGR_MOR |= CKGR_MOR_KEY( 0x37 ) | CKGR_MOR_MOSCSEL;
 	while ( ! ( PMC->PMC_SR & PMC_SR_MOSCSELS) ) { }
 #endif
 
 	// переключение на plla
+
+	PMC->PMC_MCKR = ( PMC->PMC_MCKR & ~PMC_MCKR_CSS_Msk )
+		            | PMC_MCKR_CSS_MAIN_CLK;
+	while ( ! ( PMC->PMC_SR & PMC_SR_MCKRDY ) ) { }
 	
 	_plla_init();
 
-	PMC->PMC_MCKR = PMC_MCKR_PRES_CLK_2 | PMC_MCKR_CSS_PLLA_CLK;
+	PMC->PMC_MCKR = ( ( PMC->PMC_MCKR
+						| PMC_MCKR_PRES_CLK_2
+						| PMC_MCKR_CSS_PLLA_CLK ) & ~PMC_MCKR_CSS_Msk )
+		            | PMC_MCKR_CSS_MAIN_CLK;
+	while ( ! ( PMC->PMC_SR & PMC_SR_MCKRDY ) ) { }
+
+	PMC->PMC_MCKR = ( ( PMC->PMC_MCKR | PMC_MCKR_PRES_CLK_2 )
+					  & ~PMC_MCKR_CSS_Msk )
+		            | PMC_MCKR_CSS_PLLA_CLK;
 	while ( ! ( PMC->PMC_SR & PMC_SR_MCKRDY ) ) { }
 
 	// второй шаг 28.12
@@ -72,7 +84,7 @@ _eefc_init( void )
 
 
 uint32_t
-_Pmeasure_main_clock( void )
+_measure_main_clock( void )
 {
 	while ( ! ( PMC->CKGR_MCFR & CKGR_MCFR_MAINFRDY ) ) { }
 	return PMC->CKGR_MCFR & CKGR_MCFR_MAINF_Msk;
@@ -82,29 +94,33 @@ _Pmeasure_main_clock( void )
 void
 _periph_clock_init( void )
 {
-#ifdef CONFIG_SAM3X8E_USE_CAN1
-	const uint32_t can_id = ID_CAN1;
-#else
-	const uint32_t can_id = ID_CAN0;
-#endif
-	
-	pmc_enable_periph_clk(   can_id
+	pmc_enable_periph_clk(   CAN_PERIPH_ID // soc/can.h
 						   | ID_UART );
 }
+
+
 
 
 void
 _pio_init( void )
 {
-#ifdef CONFIG_SAM3X8E_USE_CAN1
-	PIO_Configure( PIOB, PIO_PERIPH_A,
-				   PIO_PB15A_CANRX1 | PIO_PB14A_CANTX1,
-				   PIO_DEFAULT );
-#else
-	PIO_Configure( PIOA, PIO_PERIPH_A,
-				   PIO_PA1A_CANRX0 | PIO_PA0A_CANTX0,
-				   PIO_DEFAULT );
-#endif
+	// PIOB, периферия ------------------------------
+
+	PIO_SetPeripheral( CAN_PIO_BUS, PIO_PERIPH_A, CAN_PIO_MASK );
+	PIO_DisableInterrupt( CAN_PIO_BUS, CAN_PIO_MASK );
+	PIO_PullUp( CAN_PIO_BUS, CAN_PIO_MASK, PIO_PULLUP );
+	
+	// PIOB, output ---------------------------------
+
+	const uint32_t piob_out = PIO_PB27;
+
+	PIO_DisableInterrupt( PIOB, piob_out );
+
+	PIOB->PIO_CODR = 
+	PIOB->PIO_MDDR =
+	PIOB->PIO_OWER =
+	PIOB->PIO_OER  =
+	PIOB->PIO_PER  = piob_out;
 }
 
 
