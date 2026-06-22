@@ -1,0 +1,14 @@
+menu "ARM Cortex-M3"
+	 depends on SLAVE_ARCH_ARM_CORTEX_M3
+
+
+#  How many ticks there are in 1/8s of a microsecond. It is already known in
+#  advance via product documentation so why the hell should we read
+#  it from a register if it can be defined in advance
+
+config ARM_CORTEX_M3_SYSTICK_CALIB
+	   hex
+	   default 0x2904 if SLAVE_SOC_ATMEL_SAM3X8E
+
+
+endmenu

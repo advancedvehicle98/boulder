@@ -8,6 +8,8 @@ menu "CPU architecture"
 
 config SLAVE_ARCH_ARM_CORTEX_M3
 	   def_bool SLAVE_SOC_ATMEL_SAM3X8E
+	   
+source "slave/arch/arm/cortex_m3/Kconfig"
 
 config SLAVE_SLAVE_ARCH_TENSILICA_XTENSA_LX7
 	   def_bool SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1

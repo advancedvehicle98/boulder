@@ -4,17 +4,26 @@ tests-prefix := tests
 
 # ------------------------------------------------------------------
 
+dummy-arch-prefix  = arch/dummy/dummy
+dummy-soc-prefix   = soc/dummy/dummy
+dummy-board-prefix = boards/dummy/dummy
+
+# ------------------------------------------------------------------
+
+slave-format_string-objs := ram/copy.o ram/format_string.o $(dummy-arch-prefix)/math/divmod10.o
+
 slave-queue-objs := queue/pop.o queue/init.o queue/push.o ram/copy.o
 
-slave-format_string-objs := ram/copy.o ram/format_string.o arch/dummy/dummy/math/divmod10.o
+slave-uart-objs := $(sort $(slave-queue-objs) $(slave-format_string-objs)) uart/init.o uart/transmit.o $(dummy-soc-prefix)/uart/init.o
 
 slave-srctree := $(srctree)/slave/src
 slave-objtree := $(objtree)/$(tests-prefix)/slave
 
 slave-tests-prefix := slave
 slave-tests := \
+	format_string.test \
 	queue.test \
-	format_string.test
+	uart.test
 
 slave-complete-prefix := $(objtree)/$(tests-prefix)/$(slave-tests-prefix)
 
@@ -81,7 +90,11 @@ $(master-complete-prefix)/%.o: $(local)/$(master-tests-prefix)/%.c
 # =============================================
 
 phony += slave
-slave: cflags += -I$(srctree)/slave/include
+slave: cflags += \
+	-I$(srctree)/slave/include \
+	-I$(srctree)/slave/$(dummy-arch-prefix)/include \
+	-I$(srctree)/slave/$(dummy-soc-prefix)/include \
+	-I$(srctree)/slave/$(dummy-board-prefix)/include
 slave: build-slave-for-tests $(slave-complete-prefix) $(addprefix execute/, $(slave-tests))
 
 phony += build-slave-for-tests

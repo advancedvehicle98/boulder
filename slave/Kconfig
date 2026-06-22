@@ -8,6 +8,7 @@ source "slave/arch/Kconfig"
 source "slave/kconfig/Kconfig.safety"
 source "slave/kconfig/Kconfig.opts"
 source "slave/kconfig/Kconfig.flash"
+source "slave/kconfig/Kconfig.led"
 
 
 menu "Serial communication" #=======================================

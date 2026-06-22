@@ -1,8 +1,35 @@
 #include <slave/board.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+
 
 board_init_error_t
 slave_board_init( __STATE soc_state_t *soc )
 {
-	return BOARD_INIT_FAILED_SOC_INIT;
+	// настройка камня ------------------------------
+
+	uint32_t soc_init_status = slave_soc_init( soc );
+	
+	if ( soc_init_status != SOC_INIT_SUCCESS )
+		return BOARD_INIT_FAILED_SOC_INIT;
+	
+	return BOARD_INIT_SUCCESS;
 }
+
+
+void
+slave_board_init_log_and_halt( __IN const board_init_error_t e )
+{
+	switch ( e ) {
+
+	case BOARD_INIT_FAILED_SOC_INIT: {
+		puts( "Failed to initialize SoC" );
+	} break;
+		
+	}
+
+	// либо while ( true ) {}
+	exit( EXIT_FAILURE );
+}
+

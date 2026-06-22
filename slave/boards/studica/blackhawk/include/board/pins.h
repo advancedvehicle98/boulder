@@ -1,0 +1,16 @@
+#ifndef __BOULDER_STUDICA_BLACKHAWK_PINS_H
+#define __BOULDER_STUDICA_BLACKHAWK_PINS_H
+
+
+#include <libsam/include/pio.h>
+
+
+#define PIN_LED_STATUS     27
+#define BUS_PIN_LED_STATUS PIOB
+
+// PIOA
+#define PIN_UART_SERIAL_RX 8
+#define PIN_UART_SERIAL_TX 9
+
+
+#endif // __BOULDER_STUDICA_BLACKHAWK_PINS_H

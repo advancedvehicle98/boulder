@@ -1,7 +1,6 @@
 #include <slave/ram.h>
 
 #include <cmocka.h>
-#include <stdarg.h>
 
 
 static void test_no_formatting( void* *state );
@@ -48,7 +47,7 @@ test_overflow( void * *state )
 	
 	char buf[ 6 ];
 
-	size_t size = slave_ram_format_string( buf, 6, "%u4", 0xBBBBBBBB );
+	size_t size = slave_ram_format_string( buf, 6, "%x4", 0xBBBBBBBB );
 
 	assert_uint_equal( size, 6 );
 	assert_memory_equal( buf, "0xBBBB", 6 );

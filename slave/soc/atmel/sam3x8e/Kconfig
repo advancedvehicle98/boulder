@@ -7,18 +7,6 @@ config SAM3X8E_LINK_STACK_SECTION
 		 Link with .stack section (use sram.ld instead of flash.ld)
 
 
-choice SAM3X8E_MAIN_CLOCK_SOURCE
-	   prompt "Select main clock source clock"
-
-config SAM3X8E_USE_XTAL
-	   bool "Crystal oscillator (3-20 MHz)"
-
-config SAM3X8E_USE_FAST_RC
-	   bool "Embedded fast RC oscillator (12 MHz)"
-
-endchoice
-
-
 config SAM3X8E_USE_CAN1
 	   bool "Enable CAN1"
 	   default y if SLAVE_BOARD_STUDICA_BLACKHAWK

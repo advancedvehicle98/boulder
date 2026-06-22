@@ -8,7 +8,8 @@
 
 
 typedef enum {
-	SOC_INIT_SUCCESS
+	SOC_INIT_SUCCESS,
+	SOC_INIT_FAILED_ARCH_INIT
 } soc_init_error_t;
 
 

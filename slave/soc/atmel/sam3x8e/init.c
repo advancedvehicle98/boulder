@@ -1,6 +1,8 @@
 #include <slave/soc.h>
 
+#include <board/pins.h>
 #include <common/config.h>
+#include <slave/arch.h>
 #include <soc/can.h>
 #include <soc/state.h>
 
@@ -9,9 +11,8 @@
 #include <libsam/sam3xa/include/sam3xa.h>
 
 
-static uint32_t _clock_init( void );
+static void _clock_init( void );
 static void _eefc_init( void );
-static uint32_t _measure_main_clock( void );
 static void _periph_clock_init( void );
 static void _pio_init( void );
 static void _plla_init( void );
@@ -22,8 +23,17 @@ static void _plla_init( void );
 soc_init_error_t
 slave_soc_init( __STATE soc_state_t *soc )
 {
+	// инициализация процессора/-ов -----------------
+	
+	arch_init_error_t arch_init_error = slave_arch_init();
+
+	if ( arch_init_error != ARCH_INIT_SUCCESS )
+		return SOC_INIT_FAILED_ARCH_INIT;
+
+	// инициализация перфиерии на камне -------------
+	
 	_eefc_init();
-	soc->mclk = _clock_init();
+	_clock_init();
 	_periph_clock_init();
 	_pio_init();
 	
@@ -31,7 +41,7 @@ slave_soc_init( __STATE soc_state_t *soc )
 }
 
 
-uint32_t
+void
 _clock_init( void )
 {
 	// соответствует первому шагу 28.12 programming sequence
@@ -44,15 +54,15 @@ _clock_init( void )
 	
 	while ( ! ( PMC->PMC_SR & PMC_SR_MOSCXTS ) ) { }
 	
-#ifdef CONFIG_SAM3X8E_USE_XTAL
-	// переключение main clock на кристаллический осциллятор
+	// переключение на кристаллический осциллятор ---------------
 	
 	PMC->CKGR_MOR |= CKGR_MOR_KEY( 0x37 ) | CKGR_MOR_MOSCSEL;
 	while ( ! ( PMC->PMC_SR & PMC_SR_MOSCSELS) ) { }
-#endif
 
-	// переключение на plla
+	// переключение на plla -------------------------------------
 
+	// хз честно почему оно работает только так
+	
 	PMC->PMC_MCKR = ( PMC->PMC_MCKR & ~PMC_MCKR_CSS_Msk )
 		            | PMC_MCKR_CSS_MAIN_CLK;
 	while ( ! ( PMC->PMC_SR & PMC_SR_MCKRDY ) ) { }
@@ -69,10 +79,6 @@ _clock_init( void )
 					  & ~PMC_MCKR_CSS_Msk )
 		            | PMC_MCKR_CSS_PLLA_CLK;
 	while ( ! ( PMC->PMC_SR & PMC_SR_MCKRDY ) ) { }
-
-	// второй шаг 28.12
-	
-	return _measure_main_clock();
 }
 
 
@@ -80,14 +86,6 @@ void
 _eefc_init( void )
 {
 	EFC0->EEFC_FMR = EFC1->EEFC_FMR = EEFC_FMR_FWS( 4 );
-}
-
-
-uint32_t
-_measure_main_clock( void )
-{
-	while ( ! ( PMC->CKGR_MCFR & CKGR_MCFR_MAINFRDY ) ) { }
-	return PMC->CKGR_MCFR & CKGR_MCFR_MAINF_Msk;
 }
 
 
@@ -104,15 +102,22 @@ _periph_clock_init( void )
 void
 _pio_init( void )
 {
-	// PIOB, периферия ------------------------------
+	// PIOA, периферия ------------------------------
 
-	PIO_SetPeripheral( CAN_PIO_BUS, PIO_PERIPH_A, CAN_PIO_MASK );
-	PIO_DisableInterrupt( CAN_PIO_BUS, CAN_PIO_MASK );
-	PIO_PullUp( CAN_PIO_BUS, CAN_PIO_MASK, PIO_PULLUP );
+	uint32_t pioa_periph_mask =
+		  ( 1 << PIN_UART_SERIAL_RX )
+		| ( 1 << PIN_UART_SERIAL_TX );
+	
+	PIO_SetPeripheral( PIOA, PIO_PERIPH_A, pioa_periph_mask );
+	PIO_DisableInterrupt( PIOA, pioa_periph_mask );
+	PIO_PullUp( PIOA, pioa_periph_mask, PIO_PULLUP );
 	
 	// PIOB, output ---------------------------------
 
-	const uint32_t piob_out = PIO_PB27;
+	uint32_t piob_out = 0;
+
+	if ( BUS_PIN_LED_STATUS == PIOB )
+		piob_out |= 1 << PIN_LED_STATUS;
 
 	PIO_DisableInterrupt( PIOB, piob_out );
 
@@ -121,6 +126,12 @@ _pio_init( void )
 	PIOB->PIO_OWER =
 	PIOB->PIO_OER  =
 	PIOB->PIO_PER  = piob_out;
+
+	// CAN ------------------------------------------
+	
+	PIO_SetPeripheral( CAN_PIO_BUS, PIO_PERIPH_A, CAN_PIO_MASK );
+	PIO_DisableInterrupt( CAN_PIO_BUS, CAN_PIO_MASK );
+	PIO_PullUp( CAN_PIO_BUS, CAN_PIO_MASK, PIO_PULLUP );
 }
 
 

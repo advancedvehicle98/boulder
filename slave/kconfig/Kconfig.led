@@ -1,0 +1,9 @@
+menu "LED indication"
+
+
+config USE_LED_STATUS
+	   bool "Enable blinking LED for status indication"
+	   default y
+
+
+endmenu # LED indication

@@ -65,7 +65,7 @@ arch-suffix := $(patsubst "%",%,$(CONFIG_SLAVE_ARCH_SUFFIX))
 
 arch-complete-prefix := $(arch-prefix)/$(arch-suffix)
 
-boardtree := $(local)/board/$(board-complete-prefix)
+boardtree := $(local)/boards/$(board-complete-prefix)
 soctree   := $(local)/soc/$(soc-complete-prefix)
 archtree  := $(local)/arch/$(arch-complete-prefix)
 
@@ -92,8 +92,12 @@ soc-objs += init.o \
 arch-math-prefix := math
 arch-math-objs-y = divmod10.o
 
-arch-objs += \
-	$(addprefix $(arch-math-prefix)/, $(arch-math-objs-y))
+arch-time-prefix := time
+arch-time-objs-y := delay_ticks.o
+
+arch-objs += init.o \
+	$(addprefix $(arch-math-prefix)/, $(arch-math-objs-y)) \
+	$(addprefix $(arch-time-prefix)/, $(arch-time-objs-y))
 
 # -----------------------------------------
 
@@ -105,14 +109,16 @@ objs += \
 # --------------------------------------------
 
 ldflags += \
-	--specs=nosys.specs \
 	-Wl,--check-sections \
 	-Wl,--gc-sections \
 	-Wl,--unresolved-symbols=report-all \
 	-Wl,--warn-common \
 	-Wl,--warn-section-align
 
-cflags += -nostdlib --specs=nosys.specs
+ifneq ($(build-for-tests),y)
+cflags  += -nostdlib --specs=nosys.specs
+ldflags += --specs=nosys.specs
+endif
 
 # --------------------------------------------
 
@@ -186,7 +192,7 @@ soc-firmware := $(objtree)/$(prefix)/slave.hex
 
 # т.е. в каждом soc-е должен быть свой include, в котором есть soc, в котором есть перечень
 # обязательных заголовков
-board-include := $(soctree)/include
+board-include := $(soctree)/include $(boardtree)/include $(archtree)/include
 board-include := $(addprefix -I, $(board-include))
 
 cflags  += $(board-include)

@@ -1,4 +1,5 @@
 #include <slave/state.h>
+#include <slave/time.h>
 
 #include <stdbool.h>
 
@@ -20,12 +21,16 @@ slave_init( __STATE boulder_slave_state_t *s )
 	
 	// настройка CAN-шины --------------------------------------------------
 	
-	/* can_state_t *can = &( s->can ); */
+	can_state_t *can = &( s->can );
 
-	/* can_init_error_t can_init_error = slave_can_init( can ); */
+	can_init_error_t can_init_error = slave_can_init( can );
 
-	/* if ( can_init_error != CAN_INIT_SUCCESS ) */
-	/* 	return SLAVE_INIT_FAILED_CAN_INIT; */
+	if ( can_init_error != CAN_INIT_SUCCESS )
+		return SLAVE_INIT_FAILED_CAN_INIT;
+
+	// калибровка таймера ---------------------------------------------------
+
+	slave_arch_delay_ticks_calibrate();
 	
 	return SLAVE_INIT_SUCCESS;
 }

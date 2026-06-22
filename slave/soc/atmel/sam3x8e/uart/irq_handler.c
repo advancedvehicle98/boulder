@@ -9,9 +9,9 @@ static void _uart_irq_handler( _uart_instance_t * const inst );
 void
 UART_Handler( void )
 {
-	uart_state_t *uart     = &( boulder->uart );
-	uart_soc_state_t *soc  = &( uart->soc );
-	_uart_instance_t *inst = &( soc->serial );
+	uart_state_t *uart     = &boulder->uart;
+	uart_soc_state_t *soc  = &uart->soc;
+	_uart_instance_t *inst = &soc->serial;
 	
 	_uart_irq_handler( inst );
 }
@@ -22,7 +22,7 @@ UART_Handler( void )
 void
 _uart_irq_handler( _uart_instance_t * const inst )
 {
-	uart_state_t *uart = &( boulder->uart );
+	uart_state_t *uart = &boulder->uart;
 	Uart *iface = inst->iface;
 
 	uint32_t status = iface->UART_SR;
@@ -30,14 +30,14 @@ _uart_irq_handler( _uart_instance_t * const inst )
 	// если что-то получили ----------------------------------
 	
 	if ( soc_uart_is_data_received( status ) )
-		slave_buffer_queue_push_byte( &( uart->serial_rx_queue ),
+		slave_buffer_queue_push_byte( &uart->serial_rx_queue,
 									  iface->UART_RHR );
 
 	// если что-то нужно ещё отправить ------------------------
 	
 	if ( soc_uart_is_sending_data( status ) ) {
-		if ( ! slave_buffer_queue_is_empty( &( uart->serial_tx_queue ) ) )
-			iface->UART_THR = slave_buffer_queue_pop_byte( &( uart->serial_tx_queue ) );
+		if ( ! slave_buffer_queue_is_empty( &uart->serial_tx_queue ) )
+			iface->UART_THR = slave_buffer_queue_pop_byte( &uart->serial_tx_queue );
 		else
 			iface->UART_IDR = UART_IDR_TXRDY;
 	}

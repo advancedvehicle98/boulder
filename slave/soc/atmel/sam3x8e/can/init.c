@@ -1,6 +1,7 @@
 #include <slave/can.h>
 
 #include <common/config.h>
+#include <slave/state.h>
 
 #include <stddef.h>
 
@@ -16,30 +17,29 @@ static void _reset_mbox( __STATE can_soc_state_t * const can );
 can_init_error_t
 slave_soc_can_init( __STATE can_soc_state_t *s )
 {
-	// Настройка значений в соответствии с конфигом -------------
-	
-#ifdef CONFIG_SAM3X8E_USE_CAN1
-	Can * const    can    = CAN1;
-	const uint32_t can_id = ID_CAN1;
-#else
-	Can * const    can    = CAN0;
-	const uint32_t can_id = ID_CAN0;
-#endif
-
 	// !!! тактирование CAN-шины через PMC и
 	//     GPIO-функции были включены в slave_soc_init
 
 	// инициализируем интерфейс ---------------------------------
 
 	// значения битрейта соответствуют макросам CAN_BPS_* из libsam
-	uint32_t init_status = can_init( can, CHIP_FREQ_CPU_MAX, CONFIG_CAN_BITRATE_KBPS );
+	uint32_t init_status = can_init( CAN_IF, 84000000, CONFIG_CAN_BITRATE_KBPS );
+
+	// должно быть так:
+	
+	/* uint32_t init_status = can_init( CAN_IF, */
+	/* 								 boulder->soc.mclk, */
+	/* 								 CONFIG_CAN_BITRATE_KBPS ); */
+
+	// см. soc/<soc>/init.c, т.к. кажется, что неправильно
+	// замеряется mclk
 
 	if ( ! init_status ) return CAN_INIT_TIMEOUT;
 	
 	// присваивание данных в состояние --------------------------
 	
-	s->iface     = can;
-	s->periph_id = can_id;
+	s->iface     = CAN_IF;
+	s->periph_id = CAN_PERIPH_ID;
 
 	// сброс почтовых ящиков -------------------------------
 
@@ -56,12 +56,6 @@ slave_soc_can_init( __STATE can_soc_state_t *s )
 void
 _enable_interrupt()
 {
-#ifdef CONFIG_SAM3X8E_USE_CAN1
-	const uint32_t irq = CAN1_IRQn;
-#else
-	const uint32_t irq = CAN0_IRQn;
-#endif
-
 	// цитируя автора due_can (collin@github.com):
 
 	// set a fairly low priority so almost anything can preempt.
@@ -71,8 +65,8 @@ _enable_interrupt()
 	// But, keep in mind that user code in callbacks runs in interrupt context
 	// but can still be preempted at any time.
 
-	NVIC_SetPriority( irq, 12 );
-	NVIC_EnableIRQ( irq );
+	NVIC_SetPriority( CAN_IRQ, 12 );
+	NVIC_EnableIRQ( CAN_IRQ );
 }
 
 

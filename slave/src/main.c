@@ -11,13 +11,6 @@
 boulder_slave_state_t *boulder;
 
 
-void
-delay ( volatile uint32_t time )
-{
-	while ( time-- ) __asm__ ( "nop" );
-}
-
-
 __NORETURN void
 main( void )
 {
@@ -41,7 +34,7 @@ main( void )
 		slave_init_log_and_halt( init_status );
 
 #ifdef CONFIG_SLAVE_SERIAL_DEBUG_MSGS
-	const char _init_uart_str[] = "init success";
+	const char _init_uart_str[] = "init success\n";
 	slave_uart_transmit( &( state.uart ), _init_uart_str, sizeof( _init_uart_str ) );
 #endif
 

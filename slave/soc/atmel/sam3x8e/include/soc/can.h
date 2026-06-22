@@ -21,10 +21,14 @@ typedef struct _can_soc_state_t {
 
 
 #ifdef CONFIG_SAM3X8E_USE_CAN1
+#   define CAN_IRQ        CAN1_IRQn
+#   define CAN_IF         CAN1
 #   define CAN_PIO_BUS    PIOB
 #   define CAN_PIO_MASK   ( PIO_PB15A_CANRX1 | PIO_PB14A_CANTX1 )
 #   define CAN_PERIPH_ID  ID_CAN1
 #else
+#   define CAN_IRQ        CAN0_IRQn
+#   define CAN_IF         CAN0
 #   define CAN_PIO_BUS    PIOA
 #   define CAN_PIO_MASK   ( PIO_PA1A_CANRX0 | PIO_PA0A_CANTX0 )
 #   define CAN_PERIPH_ID  ID_CAN0

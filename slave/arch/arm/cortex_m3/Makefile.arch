@@ -12,3 +12,8 @@ asflags += \
 ldflags += \
 	-mcpu=cortex-m3 \
 	-mthumb
+
+
+# -------------------------------------------
+
+arch-time-objs-y += irq_handler.o

@@ -36,4 +36,13 @@ soc_uart_is_error( __IN const uint32_t status )
 }
 
 
+// типо публичные инлайны
+
+static __INLINE void
+slave_soc_uart_signal_for_transmit( uart_soc_state_t *uart )
+{
+	uart->serial.iface->UART_IER = UART_IER_TXRDY;
+}
+
+
 #endif // ! __BOULDER_ATMEL_SAM3X8E_UART_H

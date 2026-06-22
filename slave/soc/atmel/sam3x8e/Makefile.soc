@@ -5,12 +5,26 @@ libsam := libsam_sam3x8e_gcc_rel
 soc-gcc-dir := $(soc-outdir)/gcc
 soc-incdir  := $(soc-outdir)/include
 
+startup = startup_sam3xa
+
+
+# -----------------------------------------------
+
+arch-outdir := $(objtree)/$(slave-prefix)/$(arch-complete-prefix)
+
+arch-incdir := $(arch-outdir)/include
+
+
+# ------------------------------------------------
+
 soc-outdir-targets := \
 	$(soc-outdir)/$(libsam).a \
 	$(soc-incdir)/libsam/include \
-	$(soc-gcc-dir)
+	$(soc-gcc-dir) \
+	$(arch-incdir)
 
-startup = startup_sam3xa
+
+# ------------------------------------------------
 
 # пока ArduinoCore является надёжным источником,
 # откуда можно взять эту старую либу
@@ -45,6 +59,13 @@ $(soc-gcc-dir): $(soc-outdir)/$(soc-lib-dir)
 	$(q)cp -f $</variants/arduino_due_x/linker_scripts/gcc/*.ld $@
 	$(q)cp -f $</system/CMSIS/Device/ATMEL/sam3xa/source/gcc_atmel/$(startup).c $@
 
+$(arch-incdir): $(soc-outdir)/$(soc-lib-dir)
+	$(q)mkdir -p $(arch-incdir)
+	$(q)cp -f $</system/CMSIS/CMSIS/Include/core_cm3.h $(arch-incdir)
+	$(q)cp -f $</system/CMSIS/CMSIS/Include/core_cmFunc.h $(arch-incdir)
+	$(q)cp -f $</system/CMSIS/CMSIS/Include/core_cmInstr.h $(arch-incdir)
+	$(q)cp -f $</system/CMSIS/Device/ARM/ARMCM3/Include/system_ARMCM3.h $(arch-incdir)
+
 $(soc-outdir)/$(soc-lib-dir):
 	$(q)mkdir -p $(soc-outdir)
 	$(q)unzip $(downloads)/$(soc-zip) -d $(soc-outdir)
@@ -76,6 +97,7 @@ libs += $(libsam:lib%=%)
 # Makefile.arch ещё че то может доабвить
 soc-f := \
 	-I$(soc-incdir) \
+	-I$(arch-incdir) \
 	-D__SAM3X8E__ \
 	-I$(soc-outdir)/$(soc-lib-dir)/system/CMSIS/CMSIS/Include \
 	-I$(soc-outdir)/$(soc-lib-dir)/system/CMSIS/Device/ATMEL/sam3xa/include

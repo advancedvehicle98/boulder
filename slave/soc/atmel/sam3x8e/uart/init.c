@@ -19,7 +19,7 @@ slave_soc_uart_init( __STATE uart_soc_state_t * const s )
 	// ( это типо самый-самый из всех uart)
 
 	uart_init_error_t serial_init_error = _serial_uart_init( &( s->serial ),
-															 84000000 ); // пока так
+															 CONFIG_SLAVE_SOC_CLOCK_FREQUENCY ); // пока так
 
 	if ( serial_init_error != UART_INIT_SUCCESS )
 		return serial_init_error;
@@ -39,7 +39,7 @@ uart_init_error_t
 _serial_uart_init( __STATE _uart_instance_t * const inst,
 				   __IN    const uint32_t           mclk )
 {	
-	Uart *serial = (Uart *) REG_UART_CR;
+	Uart *serial = UART;
 	
 	// выключаем dma-канал для uart ----------------------------
 
