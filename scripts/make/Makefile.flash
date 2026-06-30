@@ -8,4 +8,4 @@ soc-path := $(srctree)/slave/soc/$(soc-vendor)/$(soc-prefix)
 
 slave-firmware := $(objtree)/slave/slave.hex
 
-include $(soc-path)/Makefile.flash
+-include $(soc-path)/Makefile.flash

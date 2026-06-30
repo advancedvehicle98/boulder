@@ -34,7 +34,7 @@ export downloads := $(shell mkdir -p $(modtree)/downloads && cd $(modtree)/downl
 # ===============================================================
 
 include $(srctree)/config.mk
-include $(config)
+include $(shell touch $(config) && echo $(config))
 
 
 # ===============================================================
