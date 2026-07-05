@@ -8,4 +8,6 @@ soc-path := $(srctree)/slave/soc/$(soc-vendor)/$(soc-prefix)
 
 slave-firmware := $(objtree)/slave/slave.hex
 
+# минус тут нужен в случае, когда человек только клонировал
+# репозиторий и у него ещё нет настроек в .config
 -include $(soc-path)/Makefile.flash

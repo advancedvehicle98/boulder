@@ -9,6 +9,8 @@
 #include <stdint.h>
 
 
+// старая очередь (референсная вещь) ===================================================
+
 #define BUFFER_QUEUE_LIFO      0x1
 #define BUFFER_QUEUE_OVERWRITE 0x2
 #define BUFFER_QUEUE_IS_FULL   0x4
@@ -67,6 +69,36 @@ __HOT size_t slave_buffer_queue_pop( __STATE buffer_queue_t *queue,
 									 __OUT   const size_t    size );
 
 __HOT uint8_t slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue );
+
+
+// кольцевой буфер ============================================================
+
+typedef struct _ring_queue_t {
+	void *buffer;
+	size_t end;
+	int head, tail;
+} ring_queue_t;
+
+
+// src/queue/ring_init.c
+void slave_ring_queue_init( __STATE ring_queue_t *queue,
+							__IN    void         *buffer,
+							__IN    const size_t  size );
+
+// src/queue/ring_push.c
+__HOT bool slave_ring_queue_push( __STATE ring_queue_t *queue,
+								  __IN    void * const  data,
+								  __IN    const size_t  size );
+
+__HOT bool slave_ring_queue_push_byte( __STATE ring_queue_t  *queue,
+									   __IN    const uint8_t  data );
+
+// src/queue/ring_pop.c
+__HOT size_t slave_ring_queue_pop( __STATE ring_queue_t *queue,
+								   __OUT   void * const  data,
+								   __OUT   const size_t  size );
+
+__HOT uint8_t slave_ring_queue_pop_byte( __STATE ring_queue_t *queue );
 
 
 #endif // ! __BOULDER_SLAVE_QUEUE_H

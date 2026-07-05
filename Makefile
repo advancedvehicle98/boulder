@@ -40,7 +40,7 @@ include $(shell touch $(config) && echo $(config))
 # ===============================================================
 
 phony += all
-all: dsdl master slave
+all: master slave
 
 
 # ДАЛЬШЕ МОЖНО ПОМЕЩАТЬ СВОИ ЦЕЛИ

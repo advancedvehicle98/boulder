@@ -2,5 +2,5 @@ export master-prefix = master
 master-subdir := $(srctree)/$(master-prefix)
 
 phony += master
-master:
+master: dsdl
 	$(q)$(MAKE) -C $(master-subdir)

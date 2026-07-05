@@ -5,5 +5,8 @@ config SLAVE_FAST_MATH
 	   bool "Enable fast math"
 	   default y
 
+config SLAVE_USE_BUFFER_QUEUE
+	   bool "Use buffer_queue_t for queue handling"
+	   default y
 
 endmenu

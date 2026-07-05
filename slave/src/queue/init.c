@@ -19,3 +19,4 @@ slave_buffer_queue_init( __STATE buffer_queue_t *queue,
 	queue->flags = flags;
 #endif
 }
+ 

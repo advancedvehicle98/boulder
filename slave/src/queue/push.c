@@ -11,7 +11,7 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 {
 	bool status = false;
 
-#ifdef SAFETY_REDUNDANT_NULL_CHECKING
+#ifdef CONFIG_SAFETY_REDUNDANT_NULL_CHECKING
 	if ( ! data || ! size ) return false;
 #endif
 	
@@ -20,7 +20,7 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
 
-#ifndef SAFETY_COMPROMISE
+#ifndef CONFIG_SAFETY_COMPROMISE
 	if ( is_full && ! overwrite ) return true;
 #endif
 	
@@ -110,7 +110,7 @@ slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,
 {
 	bool status = false;
 
-#ifdef SAFETY_REDUNDANT_NULL_CHECKING	
+#ifdef CONFIG_SAFETY_REDUNDANT_NULL_CHECKING	
 	if ( ! data ) return false;
 #endif
 	
@@ -119,7 +119,7 @@ slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
 
-#ifndef SAFETY_COMPROMISE
+#ifndef CONFIG_SAFETY_COMPROMISE
 	if ( is_full && ! overwrite ) return true;
 #endif
 	

@@ -88,6 +88,8 @@ include $(archtree)/Makefile.arch
 # ============================================================
 
 # че на выходе получается
+soc-can-objs-y += irq_handler.o
+
 soc-uart-objs-y += irq_handler.o
 
 objs += $(soc-complete-prefix)/$(startup).o

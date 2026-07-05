@@ -16,4 +16,4 @@ ldflags += \
 
 # -------------------------------------------
 
-arch-time-objs-y += irq_handler.o
+arch-time-objs-y += irq_handler.o micros.o

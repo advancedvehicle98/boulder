@@ -12,11 +12,7 @@ void slave_arch_delay_ticks( const uint32_t ticks );
 void slave_arch_delay_ticks_calibrate( void );
 
 
-static inline void
-slave_delay_ms( const uint32_t ms )
-{
-	slave_arch_delay_ticks( 8 * ms * CONFIG_ARM_CORTEX_M3_SYSTICK_CALIB );
-}
+#include <arch/time.h>
 
 
 #endif // ! __BOULDER_SLAVE_TIME_H

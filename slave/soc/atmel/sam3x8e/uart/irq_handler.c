@@ -9,7 +9,7 @@ static void _uart_irq_handler( _uart_instance_t * const inst );
 void
 UART_Handler( void )
 {
-	uart_state_t *uart     = &boulder->uart;
+	uart_state_t     *uart = &boulder->uart;
 	uart_soc_state_t *soc  = &uart->soc;
 	_uart_instance_t *inst = &soc->serial;
 	

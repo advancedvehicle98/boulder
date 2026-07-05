@@ -12,11 +12,25 @@
 #define SAM3X8E_CAN_MBOX_COUNT 8
 
 
+#if CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT < CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MIN
+
+#warning "TX mailbox count (CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT) subceeds the minimum count value. Changing it to the minimum allowed value"
+
+#undef CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT
+#define CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MIN
+
+#elsif CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT > CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MAX
+
+#warning "TX mailbox count (CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT) exceeds the maximum count value. Changing it to the maximum allowed value"
+
+#undef CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT
+#define CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MAX
+
+#endif
+
+
 typedef struct _can_soc_state_t {
-	Can           *iface;
-	uint32_t       periph_id;
 	can_mb_conf_t  mbox_conf[ SAM3X8E_CAN_MBOX_COUNT ];
-	size_t         tx_mbox_count;
 } can_soc_state_t;
 
 

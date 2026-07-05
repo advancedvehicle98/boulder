@@ -13,6 +13,8 @@
 boulder_run_status_t
 slave_run( __STATE boulder_slave_state_t *s )
 {
+	slave_can_process_messages( &s->can );
+	
 #ifdef CONFIG_USE_LED_STATUS
 	static uint8_t led_status = 0;
 

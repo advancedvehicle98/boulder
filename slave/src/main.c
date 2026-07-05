@@ -19,7 +19,7 @@ main( void )
 
 	boulder = &state;
 
-/* 	// аппаратная инициализация -------------------------------------- */
+ 	// аппаратная инициализация --------------------------------------
 	
 	board_init_error_t board_init_status = slave_board_init( &( state.soc ) );
 
@@ -34,7 +34,7 @@ main( void )
 		slave_init_log_and_halt( init_status );
 
 #ifdef CONFIG_SLAVE_SERIAL_DEBUG_MSGS
-	const char _init_uart_str[] = "init success\n";
+	const char _init_uart_str[] = "init success\n\r";
 	slave_uart_transmit( &( state.uart ), _init_uart_str, sizeof( _init_uart_str ) );
 #endif
 

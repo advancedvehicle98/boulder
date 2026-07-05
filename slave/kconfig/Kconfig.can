@@ -1,0 +1,9 @@
+menu "CAN communication" # =======================
+
+
+config SLAVE_CAN_RX_QUEUE_LEN
+	   int     "Received messages queue length (bytes)"
+	   default 224
+
+
+endmenu 

@@ -19,10 +19,10 @@ target := $(objtree)/$(prefix)/slave
 # желательно префиксы расписывать в алфавитном порядке
 
 can-prefix := can
-can-objs-y := init.o on_receive.o should_accept_transfer.o
+can-objs-y := init.o handle_get_node_info.o on_receive.o process_messages.o should_accept_transfer.o
 
 queue-prefix := queue
-queue-objs-y := init.o pop.o push.o
+queue-objs-y := init.o pop.o push.o ring_init.o ring_pop.o ring_push.o
 
 ram-prefix := ram
 ram-objs-y := copy.o format_string.o
@@ -90,10 +90,10 @@ soc-objs += init.o \
 # -----------------------------------------
 
 arch-math-prefix := math
-arch-math-objs-y = divmod10.o
+arch-math-objs-y += divmod10.o
 
 arch-time-prefix := time
-arch-time-objs-y := delay_ticks.o
+arch-time-objs-y += delay_ticks.o
 
 arch-objs += init.o \
 	$(addprefix $(arch-math-prefix)/, $(arch-math-objs-y)) \

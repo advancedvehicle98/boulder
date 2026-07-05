@@ -1,0 +1,51 @@
+menu "Serial communication" #=======================================
+
+
+config SLAVE_SERIAL_DEBUG_MSGS
+	   bool "Enable serial debug messages"
+	   default n
+
+
+# это на новый год
+
+config SLAVE_SERIAL_UNINTELLIGIBLE_VALUES
+	   bool # "Output value bytes as is (no formatting except for characters and strings)"
+	   default y
+	   help
+		 Disables value formatting in slave_ram_format_string.
+		 In that case, values are printed from memory as is, but they're
+		 enclosed in curly braces. It's up to the receiver to reinterpret
+		 the values. This is meant to save time when printing messages.
+		 For normal operation (when we're not debugging) it is recommended
+		 to disable debug messages (see SLAVE_SERIAL_DEBUG_MSGS). This option
+		 may be disabled if the device allows to afford extra time to format
+		 values.
+
+
+choice SLAVE_SERIAL_BAUD_CHOICE
+	   prompt "Serial communication baud"
+
+config SLAVE_SERIAL_BAUD_9600
+	   bool "9600"
+
+config SLAVE_SERIAL_BAUD_115200
+	   bool "115200"
+	   
+endchoice # SERIAL_BAUD_CHOICE
+
+config SLAVE_SERIAL_BAUD
+	   int
+	   default 9600   if SLAVE_SERIAL_BAUD_9600
+	   default 115200 if SLAVE_SERIAL_BAUD_115200
+
+
+config SLAVE_SERIAL_TX_QUEUE_LEN
+	   int     "Messages to be transmitted queue length (bytes)"
+	   default 128
+
+config SLAVE_SERIAL_RX_QUEUE_LEN
+	   int     "Received messages queue length (bytes)"
+	   default 128
+	   
+
+endmenu # Serial communication =====================================

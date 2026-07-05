@@ -6,10 +6,6 @@
 #include <stddef.h>
 
 
-static void _enable_interrupt( void );
-static void _reset_mbox( __STATE can_soc_state_t * const can );
-
-
 // см. официальные доки libsam
 // в частности:
 // https://github.com/arduino/ArduinoCore-sam/blob/790ff2c852bf159787a9966bddee4d9f55352d15/system/libsam/include/can.h
@@ -23,39 +19,48 @@ slave_soc_can_init( __STATE can_soc_state_t *s )
 	// инициализируем интерфейс ---------------------------------
 
 	// значения битрейта соответствуют макросам CAN_BPS_* из libsam
-	uint32_t init_status = can_init( CAN_IF, 84000000, CONFIG_CAN_BITRATE_KBPS );
-
-	// должно быть так:
-	
-	/* uint32_t init_status = can_init( CAN_IF, */
-	/* 								 boulder->soc.mclk, */
-	/* 								 CONFIG_CAN_BITRATE_KBPS ); */
+	uint32_t init_status = can_init( CAN_IF,
+									 CONFIG_SLAVE_SOC_CLOCK_FREQUENCY,
+									 CONFIG_CAN_BITRATE_KBPS );
 
 	// см. soc/<soc>/init.c, т.к. кажется, что неправильно
 	// замеряется mclk
 
 	if ( ! init_status ) return CAN_INIT_TIMEOUT;
-	
-	// присваивание данных в состояние --------------------------
-	
-	s->iface     = CAN_IF;
-	s->periph_id = CAN_PERIPH_ID;
 
 	// сброс почтовых ящиков -------------------------------
+	
+	int mbox_idx = 0;
 
-	_reset_mbox( s );
+	// для трансмиттера
+	
+	for ( ; mbox_idx < CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT; ++mbox_idx ) {
+		can_mb_conf_t *conf = &s->mbox_conf[ mbox_idx ];
+		
+		conf->ul_mb_idx   = mbox_idx;
+		conf->ul_id       = CAN_MID_MIDvB( CONFIG_DRONECAN_SLAVE_ID ); 	
+		conf->uc_obj_type = CAN_MB_TX_MODE;
+		conf->uc_id_ver   = 1; // с использоавнием расширенного ID
+	
+		can_mailbox_init( CAN_IF, conf );
+	}
+	
+	// для ресивера
+
+	for ( ; mbox_idx < SAM3X8E_CAN_MBOX_COUNT; ++mbox_idx ) {
+		can_mb_conf_t *conf = &s->mbox_conf[ mbox_idx ];
+		
+		conf->ul_mb_idx   = mbox_idx;
+		conf->ul_id       = CAN_MID_MIDvB( CONFIG_DRONECAN_SLAVE_ID ); 		
+		conf->uc_obj_type = CAN_MB_RX_MODE;
+		conf->ul_id_msk   = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;
+		conf->uc_id_ver   = 1;
+
+		can_mailbox_init( CAN_IF, conf );
+	}
 
 	// включение прерываний от шины ------------------------
 
-	_enable_interrupt();
-	
-	return CAN_INIT_SUCCESS;
-}
-
-
-void
-_enable_interrupt()
-{
 	// цитируя автора due_can (collin@github.com):
 
 	// set a fairly low priority so almost anything can preempt.
@@ -67,51 +72,6 @@ _enable_interrupt()
 
 	NVIC_SetPriority( CAN_IRQ, 12 );
 	NVIC_EnableIRQ( CAN_IRQ );
-}
-
-
-void
-_reset_mbox( __STATE can_soc_state_t * const can )
-{
-	// считаем кол-во ящиков для трансмиттера
 	
-	size_t tx_mbox_count = CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT;
-
-	if      ( tx_mbox_count < CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MIN )
-		tx_mbox_count = CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MIN;
-	else if ( tx_mbox_count > CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MAX )
-		tx_mbox_count = CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MAX;
-
-	can->tx_mbox_count = tx_mbox_count;
-	
-	// сброс ящиков до исходного состояния
-	
-	int mbox_idx = 0;
-
-	// для трансмиттера
-	
-	for ( ; mbox_idx < tx_mbox_count; ++mbox_idx ) {
-		can_mb_conf_t *conf = &( can->mbox_conf[ mbox_idx ] );
-		
-		conf->ul_mb_idx   = mbox_idx;
-		conf->ul_id       = CAN_MID_MIDvB( CONFIG_DRONECAN_SLAVE_ID ); 	
-		conf->uc_obj_type = CAN_MB_TX_MODE;
-		conf->uc_id_ver   = 1; // с использоавнием расширенного ID
-	
-		can_mailbox_init( can->iface, conf );
-	}
-	
-	// для ресивера
-
-	for ( ; mbox_idx < SAM3X8E_CAN_MBOX_COUNT; ++mbox_idx ) {
-		can_mb_conf_t *conf = &( can->mbox_conf[ mbox_idx ] );
-		
-		conf->ul_mb_idx   = mbox_idx;
-		conf->ul_id       = CAN_MID_MIDvB( CONFIG_DRONECAN_SLAVE_ID ); 		
-		conf->uc_obj_type = CAN_MB_RX_MODE;
-		conf->ul_id_msk   = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;
-		conf->uc_id_ver   = 1; // с использоавнием расширенного ID
-
-		can_mailbox_init( can->iface, conf );
-	}
+	return CAN_INIT_SUCCESS;
 }
