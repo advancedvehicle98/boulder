@@ -18,8 +18,18 @@ target := $(objtree)/$(prefix)/slave
 
 # желательно префиксы расписывать в алфавитном порядке
 
+dronecan-prefix := dronecan
+dronecan-objs-y := handle_get_node_info.o
+
 can-prefix := can
-can-objs-y := init.o handle_get_node_info.o on_receive.o process_messages.o should_accept_transfer.o
+can-objs-y := init.o on_receive.o process_messages.o respond.o should_accept_transfer.o \
+	$(addprefix $(dronecan-prefix)/, $(dronecan-objs-y))
+
+ahrs-prefix := ahrs
+ahrs-objs-y := init.o update.o
+
+motors-prefix := motors
+motors-objs-y := init.o update.o
 
 queue-prefix := queue
 queue-objs-y := init.o pop.o push.o ring_init.o ring_pop.o ring_push.o
@@ -27,14 +37,19 @@ queue-objs-y := init.o pop.o push.o ring_init.o ring_pop.o ring_push.o
 ram-prefix := ram
 ram-objs-y := copy.o format_string.o
 
+range-prefix := range
+range-objs-y := init.o update.o
+
 uart-prefix := uart
 uart-objs-y := init.o printf.o transmit.o
 
 objs += handle_exit.o init.o main.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y)) \
-	$(addprefix $(math-prefix)/, $(math-objs-y)) \
+	$(addprefix $(ahrs-prefix)/, $(ahrs-objs-y)) \
+	$(addprefix $(motors-prefix)/, $(motors-objs-y)) \
 	$(addprefix $(queue-prefix)/, $(queue-objs-y)) \
 	$(addprefix $(ram-prefix)/, $(ram-objs-y)) \
+	$(addprefix $(range-prefix)/, $(range-objs-y)) \
 	$(addprefix $(uart-prefix)/, $(uart-objs-y))
 
 # -------------------------------------------------------------
@@ -104,7 +119,8 @@ arch-objs += init.o \
 objs += \
 	$(addprefix soc/$(soc-complete-prefix)/, $(soc-objs)) \
 	$(addprefix boards/$(board-complete-prefix)/, $(board-objs)) \
-	$(addprefix arch/$(arch-complete-prefix)/, $(arch-objs))
+	$(addprefix arch/$(arch-complete-prefix)/, $(arch-objs)) \
+	$(addprefix dsdl/, $(dsdl-objs))
 
 # --------------------------------------------
 
@@ -209,7 +225,8 @@ cflags += \
 	$(addprefix -I,$(inc-paths)) \
 	-std=gnu99 \
 	-ffunction-sections \
-	-fdata-sections
+	-fdata-sections \
+	-Wno-main
 
 ldflags += 
 

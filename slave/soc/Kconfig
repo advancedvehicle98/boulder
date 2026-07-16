@@ -47,4 +47,5 @@ config SLAVE_SOC_CLOCK_FREQUENCY
 	   int
 	   default 84000000 if SLAVE_SOC_ATMEL_SAM3X8E
 
+
 endmenu

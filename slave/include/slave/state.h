@@ -2,12 +2,13 @@
 #define __BOULDER_SLAVE_STATE_H
 
 
-#include <slave/can.h>
-#include <slave/uart.h>
-
-#include <soc/state.h>
-
 #include <common/defines.h>
+#include <slave/ahrs.h>
+#include <slave/can.h>
+#include <slave/motors.h>
+#include <slave/range.h>
+#include <slave/uart.h>
+#include <soc/state.h>
 
 
 typedef enum {
@@ -19,14 +20,18 @@ typedef enum {
 typedef enum {
 	SLAVE_INIT_SUCCESS,
 	SLAVE_INIT_FAILED_CAN_INIT,
-	SLAVE_INIT_FAILED_UART_INIT
+	SLAVE_INIT_FAILED_UART_INIT,
+	SLAVE_INIT_FAILED_MOTORS_INIT
 } boulder_init_error_t;
 
 
 typedef struct _boulder_slave_state_t {
-	soc_state_t  soc;
-	can_state_t  can;
-	uart_state_t uart;
+	soc_state_t    soc;
+	can_state_t    can;
+	uart_state_t   uart;
+	motors_state_t motors;
+	ahrs_state_t   ahrs;
+	range_state_t  range;
 } boulder_slave_state_t;
 
 

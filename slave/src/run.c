@@ -13,7 +13,14 @@
 boulder_run_status_t
 slave_run( __STATE boulder_slave_state_t *s )
 {
-	slave_can_process_messages( &s->can );
+	if ( slave_can_process_messages( &s->can ) != CAN_PROCESS_MESSAGES_SUCCESS ) {
+		
+	}
+
+	slave_ahrs_update( &s->ahrs );
+	slave_range_update( &s->range );
+	
+	slave_motors_update( &s->motors );
 	
 #ifdef CONFIG_USE_LED_STATUS
 	static uint8_t led_status = 0;
@@ -22,8 +29,6 @@ slave_run( __STATE boulder_slave_state_t *s )
 	else                slave_status_led_on();
 
 	led_status ^= 1;
-	
-	slave_delay_ms( 1000 );
 #endif
 	
 	return SLAVE_RUN_CONTINUE;

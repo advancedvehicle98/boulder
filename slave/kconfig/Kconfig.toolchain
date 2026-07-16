@@ -32,4 +32,13 @@ config SLAVE_TOOLCHAIN
 	   default "arm-none-eabi" if SLAVE_SOC_ATMEL_SAM3X8E
 	   default ""
 
+
+# ------------------------------------------------------
+
+# костыль для библиотек для atmel
+config INLINE_IS_DEFINED
+	   bool
+	   default n if SLAVE_SOC_ATMEL_SAM3X8E
+	   default y
+
 endmenu

@@ -7,30 +7,44 @@
 boulder_init_error_t
 slave_init( __STATE boulder_slave_state_t *s )
 {
+	uint32_t error;
+	
 	// в первую очередь настраиваем UART, т.к. зачастую это единственный
 	// доступный и безопасный метод дебага (не будем показывать пальцем
 	// на тех разрабов, которые не добавляют нормальные пины для jtag
 	// на платы)
 
-	uart_state_t *uart = &( s->uart );
+	uart_state_t *uart = &s->uart;
 
-	uart_init_error_t uart_init_error = slave_uart_init( uart );
+	error = (uint32_t) slave_uart_init( uart );
 
-	if ( uart_init_error != UART_INIT_SUCCESS )
-		return SLAVE_INIT_FAILED_UART_INIT;
+	if ( error != UART_INIT_SUCCESS ) return SLAVE_INIT_FAILED_UART_INIT;
+
+	// калибровка таймера -------------------------------------------------
+
+	slave_arch_delay_ticks_calibrate();
 	
 	// настройка CAN-шины --------------------------------------------------
 	
-	can_state_t *can = &( s->can );
+	can_state_t *can = &s->can;
 
-	can_init_error_t can_init_error = slave_can_init( can );
+	error = (uint32_t) slave_can_init( can );
 
-	if ( can_init_error != CAN_INIT_SUCCESS )
-		return SLAVE_INIT_FAILED_CAN_INIT;
+	if ( error != CAN_INIT_SUCCESS ) return SLAVE_INIT_FAILED_CAN_INIT;
 
-	// калибровка таймера ---------------------------------------------------
+	// настройка моторов (ESC) -------------------------------------------
 
-	slave_arch_delay_ticks_calibrate();
+	motors_state_t *motors = &s->motors;
+
+	slave_motors_init( motors );
+
+	// настройка AHRS ----------------------------------------------------
+
+	ahrs_state_t *ahrs = &s->ahrs;
+
+	slave_ahrs_init( ahrs );
+
+	// -----------------------------------------------------------------
 	
 	return SLAVE_INIT_SUCCESS;
 }

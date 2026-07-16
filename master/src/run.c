@@ -3,7 +3,11 @@
 
 // эта штука должна всегда быть в цикле
 boulder_run_status_t
-master_run( __STATE boulder_state_t *s )
+master_run( __STATE boulder_master_state_t *s )
 {
-	return MASTER_RUN_FINISH;
+	if ( master_can_process_messages( &s->can ) != CAN_PROCESS_MESSAGES_SUCCESS ) {
+		
+	}
+	
+	return MASTER_RUN_CONTINUE;
 }

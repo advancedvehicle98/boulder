@@ -7,7 +7,7 @@
 #include <dsdl/include/dronecan_msgs.h>
 
 
-void master_dronecan_handle_get_node_info( __STATE can_state_t      *can,
+void master_dronecan_handle_get_node_info( __STATE CanardInstance   *canard,
 										   __IN    CanardRxTransfer *trx );
 
 

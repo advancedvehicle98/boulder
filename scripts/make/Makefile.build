@@ -56,6 +56,12 @@ $(objtree)/$(prefix)/%.o: $(local-srctree)/%.S
 
 # ==============================================================
 
+$(objtree)/$(prefix)/dsdl/%.o: $(dsdl-path)/src/%.c
+	$(q)$(cc) $(cflags) -c $^ -o $@
+
+
+# ==============================================================
+
 ldflags += -Wall -Wl,--check-sections -Wl,--gc-sections
 
 $(target): $(addprefix $(objtree)/$(prefix)/, $(objs))

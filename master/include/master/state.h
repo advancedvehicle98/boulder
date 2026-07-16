@@ -18,22 +18,25 @@ typedef enum {
 
 typedef struct _boulder_state_t {
 	can_state_t can;
-} boulder_state_t;
+} boulder_master_state_t;
 
 
-typedef struct _boulder_state_args_t {
+extern boulder_master_state_t *boulder;
+
+
+typedef struct _boulder_master_state_args_t {
 	can_state_args_t can;
-} boulder_state_args_t;
+} boulder_master_state_args_t;
 
 
 // deinit.c
-void master_deinit( __STATE boulder_state_t *s );
+void master_deinit( __STATE boulder_master_state_t *s );
 // init.c
-uint32_t master_init( __STATE boulder_state_t *s, __IN const boulder_state_args_t *args );
+uint32_t master_init( __STATE boulder_master_state_t *s, __IN const boulder_master_state_args_t *args );
 // parse_args.c
-uint32_t master_parse_args( __STATE boulder_state_args_t *args, __IN const size_t argc, __IN const char *argv[] );
+uint32_t master_parse_args( __STATE boulder_master_state_args_t *args, __IN const size_t argc, __IN const char *argv[] );
 // run.c
-boulder_run_status_t master_run( __STATE boulder_state_t *s );
+boulder_run_status_t master_run( __STATE boulder_master_state_t *s );
 
 
 #endif // ! __BOULDER_MASTER_STATE_H

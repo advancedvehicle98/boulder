@@ -51,7 +51,7 @@ master_can_init( __STATE       can_state_t      *s,
 	// пока это надо чисто штобы получить номер инетрфейса
 	// это нужно будет для привязки сокета к CAN (см. следующий шаг)
 	
-	strncpy( ifr.ifr_name, if_name, MASTER_CAN_IF_NAME_LEN-1 );
+	strncpy( ifr.ifr_name, if_name, MASTER_CAN_IF_NAME_LEN );
 
 	status = ioctl( fd, SIOCGIFINDEX, &ifr );
 
@@ -127,7 +127,7 @@ master_can_init( __STATE       can_state_t      *s,
 	can_set_bitrate_error_t bitrate_status = master_can_set_bitrate( ifr.ifr_ifindex, bitrate );
 
 	if ( bitrate_status != CAN_SET_BITRATE_SUCCESS ) {
-		error = CAN_INIT_ERROR_BITRATE_FAIL;
+		error = CAN_INIT_ERROR_FAILED_BAUDRATE_SET;
 		master_can_set_bitrate_print_error( bitrate_status );
 		goto _master_can_init_defer_close_socket;
 	}
@@ -186,8 +186,10 @@ master_can_init_print_error( __IN const can_init_error_t e )
 	case CAN_INIT_ERROR_FAILED_CONFIGURATION:
 		error_msg = "Не удалось настроить сокет"; break;
 
-	case CAN_INIT_ERROR_BITRATE_FAIL:
+	case CAN_INIT_ERROR_FAILED_BAUDRATE_SET:
 		error_msg = "Не удалось настроить битрейт на интерфейсе"; break;
+
+	default:
 		
 	}
 

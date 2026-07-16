@@ -9,11 +9,12 @@ bool _has_zero( const uint32_t x );
 
 
 void
-slave_ram_copy( __OUT uint8_t * const dest,
-				__IN  uint8_t * const src,
-				__IN  const size_t    size )
+slave_ram_copy( __OUT uint8_t * const       dest,
+				__IN  const uint8_t * const src,
+				__IN  const size_t          size )
 {
-	uint8_t *dest8 = dest, *src8 = src;
+	uint8_t *dest8 = dest;
+	const uint8_t *src8 = src;
 	size_t size_remaining;
 
 	if ( size >= 4 ) {
@@ -41,13 +42,14 @@ slave_ram_copy( __OUT uint8_t * const dest,
 
 
 void
-slave_ram_copy_reverse( __OUT uint8_t * const dest,
-						__IN  uint8_t * const src,
-						__IN  const size_t    size )
+slave_ram_copy_reverse( __OUT uint8_t * const       dest,
+						__IN  const uint8_t * const src,
+						__IN  const size_t          size )
 {
-	uint8_t *src_last = src + size - 1;
+	const uint8_t *src_last = src + size - 1;
 	
-	uint8_t *dest8 = dest, *src8 = src_last;
+	uint8_t *dest8 = dest;
+	const uint8_t *src8 = src_last;
 	size_t size_remaining;
 
 	if ( size >= 4 ) {
@@ -77,13 +79,13 @@ slave_ram_copy_reverse( __OUT uint8_t * const dest,
 
 
 char *
-slave_ram_copy_string( __OUT char * const dest,
-					   __IN  char * const src,
-					   __IN  const size_t max_size )
+slave_ram_copy_string( __OUT char * const       dest,
+					   __IN  const char * const src,
+					   __IN  const size_t       max_size )
 {
 	char *dest_end = dest;
 	char *dest_boundary = dest + max_size;
-	char *_src = src;
+	const char *_src = src;
 
 	// 4 == sizeof( uint32_t )
 	size_t few = ( -(long) dest ) % 4;
@@ -98,11 +100,11 @@ slave_ram_copy_string( __OUT char * const dest,
 	uint32_t *src32 = (uint32_t *) _src;
 	uint32_t chars;
 	
-	while ( dest_end < dest_boundary ) {
+	do {
 		chars = *src32++;
 		if ( _has_zero( chars ) ) break;
 		*dest_end32++ = chars;
-	}
+	} while ( dest_end < dest_boundary );
 
 	dest_end = (char *) dest_end32;
 

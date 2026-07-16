@@ -32,31 +32,32 @@ can-dronecan-prefix = dronecan
 can-dronecan-objs-y = handle_get_node_info.o
 
 can-prefix = can
-can-objs-y = data.o deinit.o init.o on_receive.o \
+can-objs-y = data.o deinit.o init.o on_receive.o process_messages.o respond.o \
 	set_bitrate.o should_accept_transfer.o \
 	$(addprefix $(can-dronecan-prefix)/, $(can-dronecan-objs-y))
 
 objs += \
 	deinit.o init.o main.o parse_args.o run.o \
 	$(addprefix $(can-prefix)/, $(can-objs-y)) \
-	$(addprefix $(net-prefix)/, $(net-objs-y))
+	$(addprefix $(net-prefix)/, $(net-objs-y)) \
+	$(addprefix dsdl/, $(dsdl-objs))
 
 # --------------------------------------------
 
-ifeq ($(CONFIG_MASTER_TOOLCHAIN),)
+ifeq ($(CONFIG_MASTER_TOOLCHAIN),"")
 
 ifneq ($(CONFIG_MASTER_NATIVE),y)
 	$(error Неизвестный тулчейн. Вероятно, в .config ошибка)
 endif
 
-else
+else # ifneq ($(CONFIG_MASTER_TOOLCHAIN),)
 
 toolchain = $(CONFIG_MASTER_TOOLCHAIN)-
 
 cc := $(toolchain)$(cc)
 ld := $(toolchain)$(ld)
 
-endif
+endif # ifneq ($(CONFIG_MASTER_TOOLCHAIN),)
 
 # -------------------------------------------------------------
 

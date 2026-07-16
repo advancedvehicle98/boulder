@@ -2,12 +2,17 @@
 #define __BOULDER_COMMON_DEFINES_H
 
 
+#include <common/config.h>
+
+
 #define __IN
 #define __OUT
 #define __STATE
 
 #ifndef __INLINE
-#   define __INLINE __attribute__(( always_inline )) inline
+#   ifdef CONFIG_INLINE_IS_DEFINED
+#       define __INLINE __attribute__(( always_inline )) inline
+#   endif
 #endif
 
 #ifndef __COLD

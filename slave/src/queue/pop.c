@@ -15,14 +15,11 @@ slave_buffer_queue_pop( __STATE buffer_queue_t *queue,
 	
 	uint8_t lifo = queue->flags & BUFFER_QUEUE_LIFO;
 
-	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
-	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
+	uint8_t is_empty = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 
 #ifndef SAFETY_COMPROMISE
 	if ( is_empty ) return 0;
 #endif
-
-	if ( is_full ) is_full = 0;
 
 	void *start = queue->start, *end  = queue->end;
 	void *head  = queue->head,  *tail = queue->tail;
@@ -91,8 +88,7 @@ _slave_buffer_queue_pop_lifo:
 	// обновление очереди ----------------------------------------------
 
 _slave_buffer_queue_pop_update:
-	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
-	queue->flags |= is_empty | is_full;
+	queue->flags = is_empty;
 
 	return popped_size;
 }
@@ -108,13 +104,10 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 	uint8_t lifo = queue->flags & BUFFER_QUEUE_LIFO;
 
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
-	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
 
 #ifndef SAFETY_COMPROMISE
 	if ( is_empty ) return 0;
 #endif
-
-	if ( is_full ) is_full = 0;
 
 	void *start = queue->start, *end  = queue->end;
 	void *head  = queue->head,  *tail = queue->tail;
@@ -146,8 +139,7 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 	
 	// обновление очереди ----------------------------------------------
 
-	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
-	queue->flags |= is_empty | is_full;
+	queue->flags = is_empty;
 
 	return popped_byte;
 }

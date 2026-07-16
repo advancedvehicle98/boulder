@@ -28,15 +28,18 @@ typedef struct _uart_state_t {
 
 // soc/<soc>/uart/init.c
 __COLD uart_init_error_t slave_soc_uart_init( __STATE uart_soc_state_t * const s );
+
 // src/uart/init.c
 __COLD uart_init_error_t slave_uart_init( __STATE uart_state_t * const s );
+
 // src/uart/printf.c
 __HOT size_t slave_uart_printf( __STATE uart_state_t * const s,
 								__IN    const char *         fmt, ... );
+
 // src/uart/transmit.c
-__HOT size_t slave_uart_transmit( __STATE uart_state_t * const  s,
-								  __IN    const void           *data,
-								  __IN    const size_t          size );
+__HOT size_t slave_uart_transmit( __STATE uart_state_t * const s,
+								  __IN    const void * const   data,
+								  __IN    const size_t         size );
 
 
 #endif // ! __BOULDER_SLAVE_UART_H

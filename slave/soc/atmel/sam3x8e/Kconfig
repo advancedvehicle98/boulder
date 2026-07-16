@@ -19,6 +19,10 @@ config SAM3X8E_CAN_TX_MBOX_COUNT
 	   default 2
 	   help
 		 Sets the number of transmitter mailboxes (from 1 to 4)
+	   
+config SAM3X8E_CAN_TIMEOUT_TICKS
+	   int "Bus timeout on initialization (ticks)"
+	   default 100000
 
 # невидимые параметры --------------------------------------------
 

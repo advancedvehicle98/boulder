@@ -9,6 +9,9 @@
 #include <string.h>
 
 
+boulder_master_state_t *boulder;
+
+
 void _print_help( void );
 
 
@@ -16,10 +19,12 @@ int
 main( const int argc,
 	  const char *argv[] )
 {
-	boulder_state_t state;
-	boulder_state_args_t state_args;
+	boulder_master_state_t state;
+	boulder_master_state_args_t state_args;
 	
 	int32_t status = EXIT_SUCCESS;
+
+	boulder = &state;
 
 	// парсим аргументы, если есть -----------------------------------------------
 	
@@ -45,7 +50,7 @@ main( const int argc,
 	uint32_t init_status = master_init( &state, &state_args );
 
 	if ( init_status != EXIT_SUCCESS ) {
-		puts( "Не удалось запустить boulder" );
+		puts( "main: Не удалось запустить boulder" );
 		return EXIT_FAILURE;
 	}
 

@@ -1,4 +1,4 @@
-soc-outdir := $(objtree)/$(slave-prefix)/$(soc-complete-prefix)
+soc-outdir := $(gentree)/$(slave-prefix)/$(soc-complete-prefix)
 
 libsam := libsam_sam3x8e_gcc_rel
 
@@ -94,6 +94,8 @@ soc-uart-objs-y += irq_handler.o
 
 objs += $(soc-complete-prefix)/$(startup).o
 
+soc-objs += syscalls.o
+
 libs += $(libsam:lib%=%)
 
 # Makefile.arch ещё че то может доабвить
@@ -109,7 +111,10 @@ asflags += $(soc-f)
 
 ldflags += \
 	-L$(soc-outdir) \
-	-Wl,--entry=Reset_Handler -Wl,--defsym=STACK_SIZE=$(CONFIG_STACK_SIZE)
+	-Wl,--entry=Reset_Handler -Wl,--defsym=STACK_SIZE=$(CONFIG_STACK_SIZE) \
+	-u _sbrk -u link -u _close -u _fstat \
+	-u _isatty -u _lseek -u _read -u _write \
+	-u _exit -u kill -u _getpid
 
 ifeq ($(SAM3X8E_LINK_STACK_SECTION),y)
 ldflags += -T $(soc-gcc-dir)/sram.ld

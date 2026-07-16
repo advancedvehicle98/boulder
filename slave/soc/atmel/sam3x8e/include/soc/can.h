@@ -11,6 +11,14 @@
 
 #define SAM3X8E_CAN_MBOX_COUNT 8
 
+#define SAM3X8E_CAN_BAUD_MAX_DIV 128
+
+#define SAM3X8E_CAN_MIN_TQ_NUM 8
+#define SAM3X8E_CAN_MAX_TQ_NUM 25
+
+#define SAM3X8E_CAN_BIT_SYNC 1
+#define SAM3X8E_CAN_BIT_IPT  2
+
 
 #if CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT < CONFIG_SAM3X8E_CAN_TX_MBOX_COUNT_MIN
 
@@ -32,6 +40,11 @@
 typedef struct _can_soc_state_t {
 	can_mb_conf_t  mbox_conf[ SAM3X8E_CAN_MBOX_COUNT ];
 } can_soc_state_t;
+
+
+typedef struct {
+	uint8_t tq, prog, phase1, phase2, sjw, sp;
+} can_bit_timing_t;
 
 
 #ifdef CONFIG_SAM3X8E_USE_CAN1

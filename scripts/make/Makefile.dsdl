@@ -14,3 +14,7 @@ dsdl: $(dsdl-path)
 
 $(dsdl-path):
 	$(q)$(dsdlc-exe) -O $(dsdl-path) $(dsdl-namespaces)
+
+export dsdl-objs := \
+	uavcan.protocol.GetNodeInfo_req.o \
+	uavcan.protocol.GetNodeInfo_res.o

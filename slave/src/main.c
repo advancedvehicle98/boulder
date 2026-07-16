@@ -13,8 +13,7 @@ boulder_slave_state_t *boulder;
 
 __NORETURN void
 main( void )
-{
-	
+{	
 	boulder_slave_state_t state;
 
 	boulder = &state;

@@ -5,9 +5,9 @@
 
 
 bool
-slave_buffer_queue_push( __STATE buffer_queue_t *queue,
-						 __IN    void * const    data,
-						 __IN    const size_t    size )
+slave_buffer_queue_push( __STATE buffer_queue_t * const queue,
+						 __IN    const void * const     data,
+						 __IN    const size_t           size )
 {
 	bool status = false;
 
@@ -17,14 +17,11 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 	
 	uint8_t overwrite = queue->flags & BUFFER_QUEUE_OVERWRITE;
 
-	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
 
 #ifndef CONFIG_SAFETY_COMPROMISE
 	if ( is_full && ! overwrite ) return true;
 #endif
-	
-	if ( is_empty ) is_empty = 0;
 
 	void *start = queue->start, *end  = queue->end;
 	void *head  = queue->head,  *tail = queue->tail;
@@ -33,7 +30,7 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 	
 	size_t before_end = 0;
 	size_t after_start = 0;
-	void *src = data;
+	const void *src = data;
 	
     // идём по кругу -------------------------------------------------
 	
@@ -97,8 +94,7 @@ slave_buffer_queue_push( __STATE buffer_queue_t *queue,
 	queue->head = head;
 	queue->tail = tail;
 
-	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
-	queue->flags |= is_empty | is_full;
+	queue->flags = is_full;
 		
 	return status;
 }
@@ -116,15 +112,12 @@ slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,
 	
 	uint8_t overwrite = queue->flags & BUFFER_QUEUE_OVERWRITE;
 
-	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 	uint8_t is_full   = queue->flags & BUFFER_QUEUE_IS_FULL;
 
 #ifndef CONFIG_SAFETY_COMPROMISE
 	if ( is_full && ! overwrite ) return true;
 #endif
-	
-	if ( is_empty ) is_empty = 0;
-
+   
 	void *start = queue->start, *end  = queue->end;
 	void *head  = queue->head,  *tail = queue->tail;
 
@@ -155,8 +148,7 @@ slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,
 	queue->head = head;
 	queue->tail = tail;
 
-	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
-	queue->flags |= is_empty | is_full;
+	queue->flags = is_full;
 		
 	return status;
 }

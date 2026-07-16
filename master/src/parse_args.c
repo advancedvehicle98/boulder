@@ -8,19 +8,19 @@
 #include <string.h>
 
 
-size_t _interpret_cmd_arg( __STATE boulder_state_args_t *args,
-						   __IN const char *opt,
-						   __IN const char *tail[] );
+size_t _interpret_cmd_arg( __STATE boulder_master_state_args_t *args,
+						   __IN    const char                  *opt,
+						   __IN    const char                  *tail[] );
 
-size_t _try_as_can_bitrate( __STATE boulder_state_args_t *args,
-							__IN const char *opt,
-							__IN const char *tail[] );
+size_t _try_as_can_bitrate( __STATE boulder_master_state_args_t *args,
+							__IN    const char                  *opt,
+							__IN    const char                  *tail[] );
 
-size_t _try_as_can_iface_name( __STATE boulder_state_args_t *args,
-							   __IN const char *opt,
-							   __IN const char *tail[] );
+size_t _try_as_can_iface_name( __STATE boulder_master_state_args_t *args,
+							   __IN    const char                  *opt,
+							   __IN    const char                  *tail[] );
 
-typedef size_t ( *try_as_func_t )( boulder_state_args_t *, const char *, const char *[] );
+typedef size_t ( *try_as_func_t )( boulder_master_state_args_t *, const char *, const char *[] );
 	
 try_as_func_t _try_as[] = {
 	_try_as_can_bitrate,
@@ -31,9 +31,9 @@ try_as_func_t _try_as[] = {
 
 
 uint32_t
-master_parse_args( __STATE        boulder_state_args_t *args_out,
-				   __IN     const size_t                argc,
-				   __IN     const char                 *argv[] )
+master_parse_args( __STATE boulder_master_state_args_t *args_out,
+				   __IN    const size_t                 argc,
+				   __IN    const char                  *argv[] )
 {
 	int di = 0;
 
@@ -49,9 +49,9 @@ master_parse_args( __STATE        boulder_state_args_t *args_out,
 
 // возвращает кол-во интерпретированных аргументов командной строки
 size_t
-_interpret_cmd_arg( __STATE       boulder_state_args_t *args_out,
-					__IN    const char                 *opt,
-					__IN    const char                 *tail[] )
+_interpret_cmd_arg( __STATE boulder_master_state_args_t *args_out,
+					__IN    const char                  *opt,
+					__IN    const char                  *tail[] )
 {
 	for ( size_t a = 0; a < TRY_AS_COUNT; ++a ) {
 		size_t offset = _try_as[ a ]( args_out, opt, tail );
@@ -64,9 +64,9 @@ _interpret_cmd_arg( __STATE       boulder_state_args_t *args_out,
 
 
 size_t
-_try_as_can_bitrate( __STATE       boulder_state_args_t *args,
-					 __IN    const char                 *opt,
-					 __IN    const char                 *tail[] )
+_try_as_can_bitrate( __STATE boulder_master_state_args_t *args,
+					 __IN    const char                  *opt,
+					 __IN    const char                  *tail[] )
 {
 	if ( ! _str_equal( opt, "--can-bitrate" ) ) return 0;
 
@@ -93,9 +93,9 @@ _try_as_can_bitrate( __STATE       boulder_state_args_t *args,
 
 
 size_t
-_try_as_can_iface_name( __STATE       boulder_state_args_t *args_out,
-						__IN    const char                 *opt,
-						__IN    const char                 *tail[] )
+_try_as_can_iface_name( __STATE boulder_master_state_args_t *args_out,
+						__IN    const char                  *opt,
+						__IN    const char                  *tail[] )
 {	
 	if ( ! _str_equal( opt, "--can-iface-name" ) ) return 0;
 

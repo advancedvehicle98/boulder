@@ -53,9 +53,9 @@ void slave_buffer_queue_init( __STATE buffer_queue_t *queue,
 // возращает true если:
 // - при queue->overwrite == false: данные не влезают в конец
 // - при queue->overwrite == true:  хвост перезаписан
-__HOT bool slave_buffer_queue_push( __STATE buffer_queue_t *queue,
-									__IN    void * const    data,
-									__IN    const size_t    size );
+__HOT bool slave_buffer_queue_push( __STATE buffer_queue_t * const queue,
+									__IN    const void * const     data,
+									__IN    const size_t           size );
 
 // упрощенная функция для байтов
 __HOT bool slave_buffer_queue_push_byte( __STATE buffer_queue_t *queue,

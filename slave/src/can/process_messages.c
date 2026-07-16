@@ -1,7 +1,7 @@
 #include <slave/can.h>
 
 
-void
+can_process_messages_error_t
 slave_can_process_messages( __STATE can_state_t *s )
 {
 	while ( ! slave_buffer_queue_is_empty( &s->rx_queue ) ) {
@@ -9,4 +9,6 @@ slave_can_process_messages( __STATE can_state_t *s )
 		slave_buffer_queue_pop( &s->rx_queue, &msg, sizeof( can_message_t ) );
 		canardHandleRxFrame( &s->canard, &msg.frame, msg.ts );
 	}
+
+	return CAN_PROCESS_MESSAGES_SUCCESS;
 }

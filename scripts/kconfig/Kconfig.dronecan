@@ -12,4 +12,20 @@ config DRONECAN_MASTER_ID
 	   help
 		 DroneCAN ID for the master device
 
+config DRONECAN_SLAVE_NODE_NAME
+	   string "Slave node name"
+	   default "boulder_slave"
+	   help
+		 DroneCAN node name for the slave device
+
+config DRONECAN_MASTER_NODE_NAME
+	   string "Master node name"
+	   default "boulder_master"
+	   help
+		 DroneCAN node name for the master device
+
+config DRONECAN_FRAME_TIMEOUT
+	   int "Response timeout (usec)"
+	   default 1000000
+
 endmenu

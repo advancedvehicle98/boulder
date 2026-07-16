@@ -8,8 +8,8 @@ void _handle_can_status_error( const can_init_error_t e );
 
 
 uint32_t
-master_init( __STATE       boulder_state_t *s,
-			 __IN    const boulder_state_args_t *args )
+master_init( __STATE       boulder_master_state_t *s,
+			 __IN    const boulder_master_state_args_t *args )
 {
 	const char *log_prefix = "master_init";
 	

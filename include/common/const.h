@@ -1,9 +1,0 @@
-#ifndef __BOULDER_CONST_H
-#define __BOULDER_CONST_H
-
-
-#define CAN_BITRATE_MAX 1000000
-#define CAN_BITRATE_MIN 10000
-
-
-#endif // ! __BOULDER_CONST_H

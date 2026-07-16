@@ -6,12 +6,12 @@
 #include <stdbool.h>
 
 
-static __INLINE char *_format_integer( __OUT char * const   out,
-									   __IN  const uint32_t integer,
-									   __IN  const size_t   size,
-									   __IN  const size_t   base,
-									   __IN  const bool     is_signed,
-									   __IN  const size_t   max_size );
+static inline char *_format_integer( __OUT char * const   out,
+									 __IN  const uint32_t integer,
+									 __IN  const size_t   size,
+									 __IN  const size_t   base,
+									 __IN  const bool     is_signed,
+									 __IN  const size_t   max_size );
 
 
 size_t
