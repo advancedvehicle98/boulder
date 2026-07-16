@@ -3,42 +3,42 @@ menu "Toolchain"
 
 # это меню выводится, если хз какой префикс должен быть
 menu "Toolchain paths"
-	   visible if SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
+	depends on SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
 
 config SLAVE_TOOLCHAIN_CC_PATH
-	   string "Compiler executable path"
+	string "Compiler executable path"
 
 config SLAVE_TOOLCHAIN_LD_PATH
-	   string "Linker executable path (if not set, it is assumed to be the same as the compiler executable)"
+	string "Linker executable path (if not set, it is assumed to be the same as the compiler executable)"
 
 config SLAVE_TOOLCHAIN_ASM_PATH
-	   string "Assembler executable path (if not set, it is assumed to be the same as the compiler executable)"
+	string "Assembler executable path (if not set, it is assumed to be the same as the compiler executable)"
 
 config SLAVE_TOOLCHAIN_OBJCOPY_PATH
-	   string "Objcopy executable path"
+	string "Objcopy executable path"
 
 endmenu
 
 
 config STACK_SIZE
-	   hex "Stack size"
-	   default 0x200 if SLAVE_SOC_ATMEL_SAM3X8E
+	hex "Stack size"
+	default 0x200 if SLAVE_SOC_ATMEL_SAM3X8E
 
 
 # невидимые параметры -----------------------------------
 
 config SLAVE_TOOLCHAIN
-	   string
-	   default "arm-none-eabi" if SLAVE_SOC_ATMEL_SAM3X8E
-	   default ""
+	string
+	default "arm-none-eabi" if SLAVE_SOC_ATMEL_SAM3X8E
+	default ""
 
 
 # ------------------------------------------------------
 
 # костыль для библиотек для atmel
 config INLINE_IS_DEFINED
-	   bool
-	   default n if SLAVE_SOC_ATMEL_SAM3X8E
-	   default y
+	bool
+	default n if SLAVE_SOC_ATMEL_SAM3X8E
+	default y
 
 endmenu

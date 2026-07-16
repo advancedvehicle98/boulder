@@ -5,61 +5,61 @@ mainmenu "Boulder configuration"
 menu "General settings"
 
 config SUPPRESS_WARNING
-	   bool "Suppress warning messages"
-	   default n
-	   help
-		 Disables compilation warnings output (-w option)
+	bool "Suppress warning messages"
+	default n
+	help
+		Disables compilation warnings output (-w option)
 
 config DEBUG
-	   bool "Enable debug features"
-	   default n
-	   help
-		 Enables debug compilation options and macros
+	bool "Enable debug features"
+	default n
+	help
+		Enables debug compilation options and macros
 
 config COVERAGE
-	   bool "Build for coverage"
-	   depends on DEBUG
-	   default n
-	   help
-		 Produce .gcno files which can be used to create coverage reports
+	bool "Build for coverage"
+	depends on DEBUG
+	default n
+	help
+		Produce .gcno files which can be used to create coverage reports
 
 
 choice OPT_LEVEL_CHOICE
-	   prompt "Optimization level"
-	   optional
+	prompt "Optimization level"
+	optional
 
 config OPT_O0
-	   bool "-O0"
+	bool "-O0"
 
 config OPT_O1
-	   bool "-O1"
+	bool "-O1"
 
 config OPT_O2
-	   bool "-O2"
+	bool "-O2"
 
 config OPT_O3
-	   bool "-O3"
+	bool "-O3"
 
 config OPT_Os
-	   bool "-Os"
+	bool "-Os"
 
 config OPT_Ofast
-	   bool "-Ofast"
+	bool "-Ofast"
 
 config OPT_Oz
-	   bool "-Oz"
+	bool "-Oz"
 
 endchoice
 
 config OPT_LEVEL
-	   string
-	   default "-O0"    if OPT-O0 || DEBUG
-	   default "-O1"    if OPT_O1
-	   default "-O2"    if OPT_O2
-	   default "-O3"    if OPT_O3
-	   default "-Os"    if OPT_Os
-	   default "-Ofast" if OPT_Ofast
-	   default "-Oz"    if OPT_Oz
+	string
+	default "-O0"    if OPT-O0 || DEBUG
+	default "-O1"    if OPT_O1
+	default "-O2"    if OPT_O2
+	default "-O3"    if OPT_O3
+	default "-Os"    if OPT_Os
+	default "-Ofast" if OPT_Ofast
+	default "-Oz"    if OPT_Oz
 
 endmenu
 
@@ -69,3 +69,4 @@ source "slave/Kconfig"
 
 source "scripts/kconfig/Kconfig.can"
 source "scripts/kconfig/Kconfig.autopilot"
+source "scripts/kconfig/Kconfig.chassis"

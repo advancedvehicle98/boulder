@@ -1,0 +1,23 @@
+menu "Rover chassis" # ===============================
+
+
+choice ROVER_FRAME_TYPE
+
+config ROVER_FRAME_SKID_STEERER
+    bool "Skid-steerer (2 wheel pairs with static shafts)"
+
+config ROVER_FRAME_ROCKER_BOGIE
+    bool "Rocker-bogie (3 wheel pairs with each wheel able to independently steer with servos)"
+
+endchoice
+
+
+# невидимые параметры ---------------------------------
+
+config INDEPENDENT_SERVO_STEERING
+	bool
+	default y if ROVER_FRAME_ROCKER_BOGIE
+	default n
+
+
+endmenu 

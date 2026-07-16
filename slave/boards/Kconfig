@@ -1,7 +1,7 @@
 menu "Target board"
 
 choice SLAVE_BOARD
-	   prompt "Selected board"
+	   prompt "Board select"
 	   help 
 	     The name of the board for running the slave firmware
 

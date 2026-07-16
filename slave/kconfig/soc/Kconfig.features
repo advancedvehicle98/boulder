@@ -1,0 +1,18 @@
+menu "SoC features" # ================================
+
+
+# невидимые параметры ---------------------------------
+
+config SOC_USE_I2C
+	bool
+	default y if AHRS_VIA_I2C
+	default n
+
+
+config SOC_USE_PWM
+	bool
+	default y if MOTORS_VIA_PWM
+	default n
+
+
+endmenu

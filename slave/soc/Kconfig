@@ -13,39 +13,40 @@ source "slave/soc/atmel/sam3x8e/Kconfig"
 # -----------------------------------------------------------
 
 config SLAVE_SOC_ATMEL_SAM3X8E
-	   def_bool SLAVE_BOARD_STUDICA_BLACKHAWK
+	def_bool SLAVE_BOARD_STUDICA_BLACKHAWK
 
 config SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
-	   def_bool SLAVE_BOARD_ESP32_DEVKITC
+	def_bool SLAVE_BOARD_ESP32_DEVKITC
 
 
 # -----------------------------------------------------------
 
-source "slave/kconfig/Kconfig.toolchain"
+source "slave/kconfig/soc/Kconfig.toolchain"
+source "slave/kconfig/soc/Kconfig.features"
 
 
 # ------------------------------------------------------
 
 config SLAVE_SOC_VENDOR
-	   string
-	   default "espressif" if SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
-	   default "atmel"     if SLAVE_SOC_ATMEL_SAM3X8E
+	string
+	default "espressif" if SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
+	default "atmel"     if SLAVE_SOC_ATMEL_SAM3X8E
 
 config SLAVE_SOC_PREFIX
-	   string
-	   default "esp32_s3" if SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
-	   default "sam3x8e"  if SLAVE_SOC_ATMEL_SAM3X8E
+	string
+	default "esp32_s3" if SLAVE_SOC_ESPRESSIF_ESP32_S3_WROOM_1
+	default "sam3x8e"  if SLAVE_SOC_ATMEL_SAM3X8E
 
 
 # ------------------------------------------------------
 
 config SLAVE_SOC_HAS_FPU
-	   bool
-	   default n if SLAVE_SOC_ATMEL_SAM3X8E
+	bool
+	default n if SLAVE_SOC_ATMEL_SAM3X8E
 
 config SLAVE_SOC_CLOCK_FREQUENCY
-	   int
-	   default 84000000 if SLAVE_SOC_ATMEL_SAM3X8E
+	int
+	default 84000000 if SLAVE_SOC_ATMEL_SAM3X8E
 
 
 endmenu

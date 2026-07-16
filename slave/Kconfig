@@ -11,6 +11,7 @@ source "slave/kconfig/Kconfig.flash"
 source "slave/kconfig/Kconfig.led"
 source "slave/kconfig/Kconfig.serial"
 source "slave/kconfig/Kconfig.can"
+source "slave/kconfig/Kconfig.ahrs"
 
 
 endmenu
