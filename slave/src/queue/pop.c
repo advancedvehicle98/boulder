@@ -15,11 +15,9 @@ slave_buffer_queue_pop( __STATE buffer_queue_t *queue,
 	
 	uint8_t lifo = queue->flags & BUFFER_QUEUE_LIFO;
 
-	uint8_t is_empty = queue->flags & BUFFER_QUEUE_IS_EMPTY;
+	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 
-#ifndef SAFETY_COMPROMISE
 	if ( is_empty ) return 0;
-#endif
 
 	void *start = queue->start, *end  = queue->end;
 	void *head  = queue->head,  *tail = queue->tail;
@@ -88,7 +86,8 @@ _slave_buffer_queue_pop_lifo:
 	// обновление очереди ----------------------------------------------
 
 _slave_buffer_queue_pop_update:
-	queue->flags = is_empty;
+	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
+	queue->flags |= is_empty;
 
 	return popped_size;
 }
@@ -105,9 +104,7 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 
 	uint8_t is_empty  = queue->flags & BUFFER_QUEUE_IS_EMPTY;
 
-#ifndef SAFETY_COMPROMISE
 	if ( is_empty ) return 0;
-#endif
 
 	void *start = queue->start, *end  = queue->end;
 	void *head  = queue->head,  *tail = queue->tail;
@@ -117,29 +114,33 @@ slave_buffer_queue_pop_byte( __STATE buffer_queue_t *queue )
 	// fifo -----------------------------------------------------------
 	
 	if ( ! lifo ) {
-		popped_byte = *( (uint8_t *) head++ );
+		void *new_head = head + 1;
 
-		if ( head == end ) head = start;
+		if ( new_head == end ) new_head = start;
 		
-		if ( head == tail ) is_empty = BUFFER_QUEUE_IS_EMPTY;
+		if ( new_head == tail ) is_empty = BUFFER_QUEUE_IS_EMPTY;
 
-		queue->head = head;
+		popped_byte = *( (uint8_t *) head );		
+		queue->head = new_head;
 	}
 	
 	// lifo -----------------------------------------------------------
 	
 	else {
-		if ( --tail < start ) tail = end - 1;
+		void *new_tail = tail - 1;
+
+		if ( new_tail < start ) new_tail = end - 1;
 		
-		if ( tail == head ) is_empty = BUFFER_QUEUE_IS_EMPTY;
+		if ( new_tail == head ) is_empty = BUFFER_QUEUE_IS_EMPTY;
 	
-		popped_byte = *( (uint8_t *) tail );	
-		queue->tail = tail;
+		popped_byte = *( (uint8_t *) new_tail );	
+		queue->tail = new_tail;
 	}
 	
 	// обновление очереди ----------------------------------------------
 
-	queue->flags = is_empty;
+	queue->flags &= ~( BUFFER_QUEUE_IS_EMPTY | BUFFER_QUEUE_IS_FULL );
+	queue->flags |= is_empty;
 
 	return popped_byte;
 }

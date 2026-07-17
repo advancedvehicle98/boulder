@@ -2,14 +2,26 @@ menu "Rover chassis" # ===============================
 
 
 choice ROVER_FRAME_TYPE
+	prompt "Frame type"
 
 config ROVER_FRAME_SKID_STEERER
-    bool "Skid-steerer (2 wheel pairs with static shafts)"
+    bool "Skid-steerer (2 wheel pairs)"
 
 config ROVER_FRAME_ROCKER_BOGIE
-    bool "Rocker-bogie (3 wheel pairs with each wheel able to independently steer with servos)"
+    bool "Rocker-bogie (3 wheel pairs)"
 
 endchoice
+
+
+config ROVER_FRAME_SERVO_STEERING
+	bool "Enable servos for steering wheels"
+	default n
+	depends on ROVER_FRAME_ROCKER_BOGIE
+
+config ROVER_FRAME_SERVO_STEERING_FOR_MIDDLE_WHEELS
+    bool "Enable servo steering for middle wheels"
+	default n
+	depends on ROVER_FRAME_SERVO_STEERING
 
 
 # невидимые параметры ---------------------------------

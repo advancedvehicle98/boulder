@@ -15,7 +15,7 @@ config AHRS_IFACE_INSTANCE_INDEX
 	int "AHRS interface index"
 	default 1
 	help
-	    Index of the interface used to communicate with ARHS module.
+	    Index of the interface used to communicate with AHRS module.
 		Note: (TBD) interface index collisions are resolved in <common/defines.h>
 		and an error will be generated on collision. Make sure your sensor
 		and motor connections are planned ahead

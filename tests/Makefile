@@ -45,11 +45,14 @@ all: slave master
 
 cflags += -I$(cmocka-include) \
 	-I$(gentree) -I$(srctree)/include \
-	$(patsubst "%",%,$(CONFIG_OPT_LEVEL))
+	$(patsubst "%",%,$(CONFIG_OPT_LEVEL)) \
+	-DCONFIG_INLINE_IS_DEFINED
 
 ldflags += -L$(cmocka-libdir)
 
 libs += cmocka
+
+export cflags ldflags
 
 # нам спецом нужно пересобирать некоторые файлы из прошивок,
 # чтобы потом можно было их слинковать с тестами.

@@ -26,6 +26,8 @@ slave_board_init_log_and_halt( __IN const board_init_error_t e )
 	case BOARD_INIT_FAILED_SOC_INIT: {
 		puts( "Failed to initialize SoC" );
 	} break;
+
+	default:
 		
 	}
 
